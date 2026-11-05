@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Premier compte - AutoLoc</title>
+</head>
+<body>
+<main class="ecran-compte">
+    <div class="carte-compte carte-compte-large">
+        <h1>Créer le premier compte</h1>
+        <p class="introduction">Ce compte aura le rôle de manager et pourra créer les autres employés.</p>
+        <form th:action="@{/premiere-connexion}" th:object="${form}" method="post">
+            <div class="ligne-deux">
+                <div class="champ">
+                    <label th:for="prenom">Prénom</label>
+                    <input type="text" required th:field="*{prenom}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="nom">Nom</label>
+                    <input type="text" required th:field="*{nom}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></p>
+                </div>
+            </div>
+            <div class="champ">
+                <label th:for="identifiant">Identifiant</label>
+                <input type="text" autocomplete="username" required th:field="*{identifiant}" th:errorclass="invalide">
+                <p class="erreur-champ" th:if="${#fields.hasErrors('identifiant')}" th:errors="*{identifiant}"></p>
+            </div>
+            <div class="champ">
+                <label for="motDePasse">Mot de passe (8 caractères minimum)</label>
+                <input type="password" id="motDePasse" name="motDePasse" minlength="8" maxlength="72" autocomplete="new-password" required th:errorclass="invalide">
+                <p class="erreur-champ" th:if="${#fields.hasErrors('motDePasse')}" th:errors="*{motDePasse}"></p>
+            </div>
+            <div class="champ" th:unless="${#lists.isEmpty(agences)}">
+                <label for="idAgence">Agence</label>
+                <select id="idAgence" name="idAgence" required>
+                    <option th:each="choix : ${agences}" th:value="${choix.idAgence}" th:text="${choix.nom}"
+                            th:selected="${form.idAgence == choix.idAgence}"></option>
+                </select>
+            </div>
+            <fieldset class="champ groupe" th:if="${#lists.isEmpty(agences)}">
+                <legend>Votre agence</legend>
+                <div class="champ">
+                    <label th:for="nomAgence">Nom</label>
+                    <input type="text" required th:field="*{nomAgence}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('nomAgence')}" th:errors="*{nomAgence}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="villeAgence">Ville</label>
+                    <input type="text" required th:field="*{villeAgence}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('villeAgence')}" th:errors="*{villeAgence}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="adresseAgence">Adresse</label>
+                    <input type="text" required th:field="*{adresseAgence}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('adresseAgence')}" th:errors="*{adresseAgence}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="telephoneAgence">Téléphone</label>
+                    <input type="text" required th:field="*{telephoneAgence}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('telephoneAgence')}" th:errors="*{telephoneAgence}"></p>
+                </div>
+            </fieldset>
+            <button class="bouton bouton-principal bouton-large" type="submit">Créer le compte</button>
+        </form>
+        <p class="bas-carte"><a th:href="@{/connexion}">Retour à la connexion</a></p>
+    </div>
+</main>
+</body>
+</html>

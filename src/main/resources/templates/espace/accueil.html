@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Mes réservations - AutoLoc</title>
+</head>
+<body>
+<main>
+    <section th:replace="~{fragments/site :: espace-tete('reservations', |Bonjour ${client.prenom}|, 'Retrouvez vos locations, vos contrats et votre place de parking.')}"></section>
+    <div class="conteneur espace-page">
+        <p class="alerte alerte-succes" role="status" th:if="${succes}" th:text="${succes}"></p>
+        <p class="alerte alerte-erreur" role="alert" th:if="${erreur}" th:text="${erreur}"></p>
+
+        <article class="prochaine" th:if="${prochaine != null and prochaine.vehicule != null}">
+            <div class="prochaine-visuel">
+                <svg class="illustration" aria-hidden="true" th:classappend="'teinte-' + ${prochaine.vehicule.teinte}">
+                    <use th:href="@{/images/vehicules.svg} + '#' + ${prochaine.vehicule.categorie}"></use>
+                </svg>
+            </div>
+            <div>
+                <span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(prochaine.statut)}" th:text="${prochaine.statut.libelle}"></span>
+                <h2 th:text="|${prochaine.vehicule.marque} ${prochaine.vehicule.modele}|"></h2>
+                <p th:text="|Du ${#temporals.format(prochaine.dateDebut, 'dd/MM/yyyy')} au ${#temporals.format(prochaine.dateFin, 'dd/MM/yyyy')} – ${prochaine.vehicule.agence?.nom ?: 'Agence à confirmer'}|"></p>
+            </div>
+            <a class="bouton bouton-principal" th:href="@{/espace/reservations/{id}(id=${prochaine.idReservation})}">Voir ma réservation</a>
+        </article>
+
+        <div class="titre-bloc">
+            <h2>Toutes mes réservations</h2>
+            <a class="bouton" th:href="@{/catalogue}">Réserver un véhicule</a>
+        </div>
+        <ul class="liste-reservations" th:unless="${#lists.isEmpty(reservations)}">
+            <li th:each="reservation : ${reservations}">
+                <a class="ligne-reservation" th:href="@{/espace/reservations/{id}(id=${reservation.idReservation})}">
+                    <span>
+                        <strong th:text="${reservation.vehicule != null} ? ${reservation.vehicule.marque} + ' ' + ${reservation.vehicule.modele} : 'Véhicule à confirmer'"></strong>
+                        <span class="doux" th:text="|Réservation n°${reservation.idReservation}|"></span>
+                    </span>
+                    <span th:text="|${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')} → ${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}|"></span>
+                    <span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(reservation.statut)}" th:text="${reservation.statut.libelle}"></span>
+                </a>
+            </li>
+        </ul>
+        <div class="etat-vide" th:if="${#lists.isEmpty(reservations)}">
+            <h2>Aucune réservation pour le moment</h2>
+            <p>Choisissez un véhicule pour commencer.</p>
+            <a class="bouton bouton-principal" th:href="@{/catalogue}">Voir les véhicules</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

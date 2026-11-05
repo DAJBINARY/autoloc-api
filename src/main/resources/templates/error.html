@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Une erreur est survenue - AutoLoc</title>
+</head>
+<body>
+<main class="ecran-compte">
+    <div class="carte-compte">
+        <h1>Une erreur est survenue</h1>
+        <p class="introduction">La demande n'a pas pu être traitée. Réessayez dans un instant.</p>
+        <a class="bouton bouton-principal bouton-large" th:href="@{/}">Retour à l'accueil</a>
+    </div>
+</main>
+</body>
+</html>

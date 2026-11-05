@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <symbol id="CITADINE" viewBox="0 0 320 120">
+        <path fill="currentColor" d="M22 92c-4-16-2-27 18-31l44-4c17-19 38-29 66-30h46c28 1 46 12 62 31l28 8c14 4 18 12 18 26Z"/>
+        <path fill="#141823" d="M100 57c16-14 31-22 52-22h14v22Zm74 0V35h22c20 0 33 8 46 22Z"/>
+        <circle cx="84" cy="92" r="22" fill="#141823"/><circle cx="84" cy="92" r="10" fill="#c9ced6"/>
+        <circle cx="244" cy="92" r="22" fill="#141823"/><circle cx="244" cy="92" r="10" fill="#c9ced6"/>
+        <rect x="288" y="68" width="10" height="7" rx="3" fill="#ffe2a6"/>
+    </symbol>
+    <symbol id="BERLINE" viewBox="0 0 320 120">
+        <path fill="currentColor" d="M10 92c-3-15 1-25 22-29l58-8c20-16 42-26 72-27h40c30 1 50 10 66 27l38 7c14 3 18 13 16 30Z"/>
+        <path fill="#141823" d="M108 55c18-12 36-19 58-19h12v19Zm78 0V36h16c22 0 38 6 52 19Z"/>
+        <circle cx="76" cy="92" r="21" fill="#141823"/><circle cx="76" cy="92" r="9.5" fill="#c9ced6"/>
+        <circle cx="250" cy="92" r="21" fill="#141823"/><circle cx="250" cy="92" r="9.5" fill="#c9ced6"/>
+        <rect x="296" y="68" width="10" height="7" rx="3" fill="#ffe2a6"/>
+    </symbol>
+    <symbol id="SUV" viewBox="0 0 320 120">
+        <path fill="currentColor" d="M14 92V60c0-9 6-13 20-14l36-3c16-18 32-27 56-27h96c26 0 38 10 50 29l26 6c10 3 14 10 14 22v19Z"/>
+        <path fill="#141823" d="M84 44c14-12 26-19 44-19h36v19Zm88 0V25h42c18 0 28 7 40 19Z"/>
+        <circle cx="80" cy="92" r="24" fill="#141823"/><circle cx="80" cy="92" r="11" fill="#c9ced6"/>
+        <circle cx="246" cy="92" r="24" fill="#141823"/><circle cx="246" cy="92" r="11" fill="#c9ced6"/>
+        <rect x="294" y="58" width="10" height="8" rx="3" fill="#ffe2a6"/>
+    </symbol>
+    <symbol id="UTILITAIRE" viewBox="0 0 320 120">
+        <path fill="currentColor" d="M12 92V26c0-9 6-14 16-14h190c20 0 32 9 42 28l20 18c18 3 28 10 28 22v12Z"/>
+        <path fill="#141823" d="M206 50V22h12c15 0 24 9 32 28Z"/>
+        <path fill="#141823" opacity=".14" d="M30 50h160v3H30Z"/>
+        <circle cx="76" cy="92" r="22" fill="#141823"/><circle cx="76" cy="92" r="10" fill="#c9ced6"/>
+        <circle cx="250" cy="92" r="22" fill="#141823"/><circle cx="250" cy="92" r="10" fill="#c9ced6"/>
+        <rect x="296" y="66" width="9" height="7" rx="3" fill="#ffe2a6"/>
+    </symbol>
+</svg>

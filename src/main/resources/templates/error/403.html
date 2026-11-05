@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Accès refusé - AutoLoc</title>
+</head>
+<body>
+<main class="ecran-compte">
+    <div class="carte-compte">
+        <h1>Accès refusé</h1>
+        <p class="introduction">Votre compte ne permet pas d'ouvrir cette page.</p>
+        <a class="bouton bouton-principal bouton-large" th:href="@{/}">Retour à l'accueil</a>
+    </div>
+</main>
+</body>
+</html>

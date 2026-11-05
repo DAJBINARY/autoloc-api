@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Planning - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1 class="premiere-majuscule" th:text="|Planning : ${libelleMois}|"></h1>
+        <div class="boutons-page">
+            <a class="bouton" th:href="@{/planning(mois=${moisPrecedent})}">Mois précédent</a>
+            <a class="bouton" th:href="@{/planning}">Mois en cours</a>
+            <a class="bouton" th:href="@{/planning(mois=${moisSuivant})}">Mois suivant</a>
+        </div>
+    </div>
+    <ul class="legende" aria-label="Légende">
+        <li><span class="case-legende case-en_attente">E</span> En attente</li>
+        <li><span class="case-legende case-confirmee">C</span> Confirmée</li>
+        <li><span class="case-legende case-terminee">T</span> Terminée</li>
+        <li><span class="case-legende case-maintenance">M</span> Maintenance</li>
+    </ul>
+    <div class="tableau-conteneur">
+        <table class="planning">
+            <thead>
+            <tr>
+                <th class="planning-vehicule">Véhicule</th>
+                <th th:each="jour : ${jours}" th:text="${jour}" th:classappend="${jour == jourCourant} ? 'aujourdhui'"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ligne : ${lignes}">
+                <th class="planning-vehicule">
+                    <a th:href="@{/vehicules/{id}(id=${ligne.vehicule().idVehicule})}" th:text="${ligne.vehicule().libelle}"></a>
+                </th>
+                <td th:each="case : ${ligne.cases()}" th:classappend="'case-' + ${case.type()}">
+                    <a th:if="${case.lien() != null}" th:href="@{${case.lien()}}" th:title="${case.titre()}" th:text="${case.code()}" th:aria-label="${case.titre()}"></a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(lignes)}">
+                <td class="vide" th:colspan="${#lists.size(jours) + 1}">Aucun véhicule pour le moment.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

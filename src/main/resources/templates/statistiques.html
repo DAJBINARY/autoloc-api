@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Statistiques - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1>Statistiques</h1>
+    <section class="bloc">
+        <h2>Encaissements des 12 derniers mois</h2>
+        <p class="aide">Total encaissé depuis le début : <span th:text="${#numbers.formatDecimal(totalEncaisse, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></p>
+        <div class="histogramme" role="img" aria-label="Encaissements par mois, détaillés dans le tableau ci-dessous">
+            <div class="barre-colonne" tabindex="0" th:each="ligne : ${parMois}"
+                 th:data-valeur="${#numbers.formatDecimal(ligne.total(), 1, 'WHITESPACE', 2, 'COMMA')} + ' €'">
+                <div class="barre" th:style="|height: ${ligne.pourcentage()}%|"></div>
+                <span class="barre-libelle" th:text="${ligne.libelle()}"></span>
+            </div>
+        </div>
+        <details class="detail-table">
+            <summary>Voir le tableau</summary>
+            <div class="tableau-conteneur">
+                <table class="tableau">
+                    <thead><tr><th>Mois</th><th class="nombre">Encaissé</th></tr></thead>
+                    <tbody>
+                    <tr th:each="ligne : ${parMois}">
+                        <td th:text="${ligne.libelle()}"></td>
+                        <td class="nombre" th:text="${#numbers.formatDecimal(ligne.total(), 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </details>
+    </section>
+    <div class="deux-colonnes">
+        <section class="bloc">
+            <h2>Encaissements par mode de paiement</h2>
+            <div class="tableau-conteneur">
+                <table class="tableau">
+                    <thead><tr><th>Mode</th><th class="nombre">Total</th></tr></thead>
+                    <tbody>
+                    <tr th:each="ligne : ${parMode}">
+                        <td th:text="${ligne.libelle()}"></td>
+                        <td class="nombre" th:text="${#numbers.formatDecimal(ligne.total(), 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(parMode)}"><td class="vide" colspan="2">Aucun paiement pour le moment.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="bloc">
+            <h2>Réservations par statut</h2>
+            <div class="tableau-conteneur">
+                <table class="tableau">
+                    <thead><tr><th>Statut</th><th class="nombre">Nombre</th></tr></thead>
+                    <tbody>
+                    <tr th:each="ligne : ${parStatut}">
+                        <td th:text="${ligne.libelle()}"></td>
+                        <td class="nombre" th:text="${ligne.nombre()}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(parStatut)}"><td class="vide" colspan="2">Aucune réservation pour le moment.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+        <section class="bloc">
+            <h2>Véhicules les plus réservés</h2>
+            <div class="tableau-conteneur">
+                <table class="tableau">
+                    <thead><tr><th>Véhicule</th><th class="nombre">Réservations</th></tr></thead>
+                    <tbody>
+                    <tr th:each="ligne : ${vehicules}">
+                        <td th:text="${ligne.libelle()}"></td>
+                        <td class="nombre" th:text="${ligne.nombre()}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(vehicules)}"><td class="vide" colspan="2">Aucune réservation pour le moment.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+</main>
+</body>
+</html>

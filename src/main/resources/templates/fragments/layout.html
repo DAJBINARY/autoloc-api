@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:fragment="page(titre, contenu)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:replace="${titre}">AutoLoc</title>
+    <link rel="icon" th:href="@{/images/logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="backoffice">
+<aside class="lateral">
+    <a class="marque" th:href="@{/tableau-de-bord}"><img th:src="@{/images/logo.svg}" alt=""> AutoLoc</a>
+    <nav class="navigation" aria-label="Navigation du back-office">
+        <a th:href="@{/tableau-de-bord}" th:classappend="${chemin == '/tableau-de-bord'} ? 'actif'">Tableau de bord</a>
+        <p class="navigation-titre">Activité</p>
+        <a th:href="@{/reservations}" th:classappend="${section == 'reservations'} ? 'actif'">Réservations</a>
+        <a th:href="@{/contrats}" th:classappend="${section == 'contrats'} ? 'actif'">Contrats</a>
+        <a th:href="@{/paiements}" th:classappend="${section == 'paiements'} ? 'actif'">Paiements</a>
+        <a th:href="@{/planning}" th:classappend="${chemin == '/planning'} ? 'actif'">Planning</a>
+        <a th:href="@{/disponibilites}" th:classappend="${chemin == '/disponibilites'} ? 'actif'">Disponibilités</a>
+        <p class="navigation-titre">Flotte</p>
+        <a th:href="@{/vehicules}" th:classappend="${section == 'vehicules'} ? 'actif'">Véhicules</a>
+        <a th:href="@{/maintenances}" th:classappend="${section == 'maintenances'} ? 'actif'">Maintenances</a>
+        <a th:href="@{/equipements}" th:classappend="${section == 'equipements'} ? 'actif'">Équipements</a>
+        <a th:href="@{/parking}" th:classappend="${chemin == '/parking'} ? 'actif'">Parking</a>
+        <p class="navigation-titre">Organisation</p>
+        <a th:href="@{/clients}" th:classappend="${section == 'clients'} ? 'actif'">Clients</a>
+        <a th:href="@{/agences}" th:classappend="${section == 'agences'} ? 'actif'">Agences</a>
+        <a th:href="@{/employes}" th:classappend="${section == 'employes'} ? 'actif'">Employés</a>
+        <a th:if="${estManager}" th:href="@{/statistiques}" th:classappend="${chemin == '/statistiques'} ? 'actif'">Statistiques</a>
+        <p class="navigation-titre">Site</p>
+        <a th:href="@{/}">Voir le site public</a>
+    </nav>
+    <div class="compte" th:if="${utilisateur}">
+        <a th:href="@{/mon-compte}" th:text="${utilisateur}"></a>
+        <form th:action="@{/deconnexion}" method="post"><button class="bouton" type="submit">Déconnexion</button></form>
+    </div>
+</aside>
+<div class="page">
+    <p class="alerte alerte-succes" role="status" th:if="${succes}" th:text="${succes}"></p>
+    <p class="alerte alerte-erreur" role="alert" th:if="${erreur}" th:text="${erreur}"></p>
+    <main th:replace="${contenu}"></main>
+</div>
+</body>
+</html>

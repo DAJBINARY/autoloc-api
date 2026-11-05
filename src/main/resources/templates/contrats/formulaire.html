@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Contrats - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${modification} ? 'Modifier le contrat' : 'Nouveau contrat'">Nouveau contrat</h1>
+    <form class="formulaire" th:action="@{${action}}" th:object="${objet}" method="post">
+        <p class="alerte alerte-erreur" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#fields.globalErrors()[0]}"></p>
+            <div class="champ">
+                <label for="reservation">Réservation</label>
+                <select id="reservation" name="reservation" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="choix : ${reservations}" th:value="${choix.idReservation}" th:text="${choix.libelle}"
+                            th:selected="${objet.reservation?.idReservation == choix.idReservation}"></option>
+                </select>
+                <p class="aide" th:if="${#lists.isEmpty(reservations)}">Aucune réservation sans contrat. <a th:href="@{/reservations/nouveau}">En créer un</a></p>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('reservation')}" th:errors="*{reservation}"></p>
+            </div>
+            <div class="champ">
+                <label for="employe">Signé par</label>
+                <select id="employe" name="employe" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="choix : ${employes}" th:value="${choix.idEmploye}" th:text="${choix.nomComplet}"
+                            th:selected="${objet.employe?.idEmploye == choix.idEmploye}"></option>
+                </select>
+                <p class="aide" th:if="${#lists.isEmpty(employes)}">Aucun employé pour le moment. <a th:href="@{/employes/nouveau}">En créer un</a></p>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('employe')}" th:errors="*{employe}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="dateSignature">Date de signature</label>
+                <input type="date" th:field="*{dateSignature}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('dateSignature')}" th:errors="*{dateSignature}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="montantTotal">Montant total (€)</label>
+                <input type="number" min="0.01" step="0.01" th:field="*{montantTotal}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('montantTotal')}" th:errors="*{montantTotal}"></p>
+            </div>
+            <div class="champ champ-case">
+                <label><input type="checkbox" th:field="*{valide}"> Contrat valide</label>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('valide')}" th:errors="*{valide}"></p>
+            </div>
+        <div class="boutons">
+            <button class="bouton bouton-principal" type="submit">Enregistrer</button>
+            <a class="bouton" th:href="@{/contrats}">Annuler</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

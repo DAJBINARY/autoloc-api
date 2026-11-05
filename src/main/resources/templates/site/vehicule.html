@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Véhicule - AutoLoc</title>
+</head>
+<body>
+<main>
+    <section class="section conteneur" style="padding-top: 32px">
+        <p style="margin: 0 0 14px"><a class="lien-fleche" th:href="@{/catalogue}">← Retour au catalogue</a></p>
+        <p class="alerte alerte-erreur" role="alert" th:if="${erreur}" th:text="${erreur}"></p>
+        <div class="fiche-vehicule">
+            <div>
+                <div class="studio">
+                    <div class="scene3d" data-scene3d>
+                        <svg class="scene3d-repli" aria-hidden="true" th:classappend="'teinte-' + ${vehicule.teinte}">
+                            <use th:href="@{/images/vehicules.svg} + '#' + ${vehicule.categorie}"></use>
+                        </svg>
+                        <canvas data-voiture3d data-fond="clair" th:data-categorie="${vehicule.categorie}" th:data-teinte="${vehicule.teinte}"
+                                role="img" th:aria-label="|${vehicule.marque} ${vehicule.modele} en 3D, à faire tourner en la faisant glisser|"></canvas>
+                        <p class="scene3d-indice">Glissez pour faire tourner</p>
+                    </div>
+                </div>
+                <dl class="specs">
+                    <div><dt>Catégorie</dt><dd th:text="${vehicule.categorie.libelle}"></dd></div>
+                    <div><dt>Immatriculation</dt><dd th:text="${vehicule.immatriculation}"></dd></div>
+                    <div><dt>Agence</dt><dd th:text="${vehicule.agence?.nom} ?: 'À confirmer'"></dd></div>
+                    <div th:if="${vehicule.agence != null}"><dt>Ville</dt><dd th:text="${vehicule.agence.ville}"></dd></div>
+                </dl>
+                <section class="bloc" th:unless="${vehicule.equipements.isEmpty()}">
+                    <h2>Équipements inclus</h2>
+                    <ul class="etiquettes">
+                        <li th:each="equipement : ${vehicule.equipements}"><span th:text="${equipement.libelle}"></span></li>
+                    </ul>
+                </section>
+            </div>
+            <aside class="panneau panneau-collant">
+                <span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(vehicule.statut)}" th:text="${vehicule.statut.libelle}"></span>
+                <h1 style="margin: 10px 0 4px" th:text="|${vehicule.marque} ${vehicule.modele}|"></h1>
+                <p class="prix" style="margin: 0 0 18px">
+                    <span th:text="${#numbers.formatDecimal(vehicule.tarifJournalier, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span>
+                    <small>/ jour</small>
+                </p>
+                <form th:action="@{/catalogue/{id}(id=${vehicule.idVehicule})}" method="get" data-periode>
+                    <div class="ligne-dates">
+                        <div class="champ">
+                            <label for="debut">Départ</label>
+                            <input type="date" id="debut" name="debut" required th:value="${debut}" th:min="${aujourdhui}">
+                        </div>
+                        <div class="champ">
+                            <label for="fin">Retour</label>
+                            <input type="date" id="fin" name="fin" required th:value="${fin}" th:min="${debut ?: aujourdhui}">
+                        </div>
+                    </div>
+                    <button class="bouton bouton-large" type="submit">Vérifier ces dates</button>
+                </form>
+                <th:block th:if="${libre != null}">
+                    <dl class="recap" th:if="${libre}">
+                        <div><dt>Durée</dt><dd th:text="|${jours} jour${jours > 1 ? 's' : ''}|"></dd></div>
+                        <div class="recap-total"><dt>Total</dt><dd th:text="${#numbers.formatDecimal(montant, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></dd></div>
+                    </dl>
+                    <a class="bouton bouton-principal bouton-large" th:if="${libre}"
+                       th:href="@{/espace/reservations/nouvelle(vehicule=${vehicule.idVehicule},debut=${debut},fin=${fin})}">Réserver ce véhicule</a>
+                    <p class="alerte alerte-erreur" style="margin: 14px 0 0" role="status" th:unless="${libre}">Ce véhicule n'est pas libre sur ces dates.
+                        <a th:href="@{/catalogue(debut=${debut},fin=${fin})}">Voir les véhicules libres</a></p>
+                    <p class="aide" th:if="${libre and !estClient and utilisateur == null}">Vous vous connecterez ou créerez un compte à l'étape suivante.</p>
+                </th:block>
+            </aside>
+        </div>
+    </section>
+</main>
+</body>
+</html>

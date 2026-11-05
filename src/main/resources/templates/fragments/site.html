@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:fragment="page(titre, contenu)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:replace="${titre}">AutoLoc</title>
+    <meta name="description" content="AutoLoc : louez un véhicule disponible, réservez et payez en ligne, retrouvez-le sur le parking de votre agence.">
+    <link rel="icon" th:href="@{/images/logo.svg}" type="image/svg+xml">
+    <link rel="preload" th:href="@{/fonts/bricolage-grotesque-latin-wght-normal.woff2}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+    <script type="module" th:src="@{/js/site.js}"></script>
+</head>
+<body class="site">
+<header class="site-entete">
+    <div class="conteneur site-entete-contenu">
+        <a class="marque" th:href="@{/}"><img th:src="@{/images/logo.svg}" alt=""> AutoLoc</a>
+        <button class="bouton bouton-fantome menu-bouton" type="button" data-menu-bouton aria-expanded="false">Menu</button>
+        <nav class="site-nav" aria-label="Navigation principale">
+            <a th:href="@{/}">Accueil</a>
+            <a th:href="@{/catalogue}">Véhicules</a>
+            <a th:if="${estClient}" th:href="@{/espace}">Mes réservations</a>
+        </nav>
+        <div class="site-actions">
+            <a class="bouton bouton-principal" th:href="@{/catalogue}">Voir les véhicules</a>
+            <th:block th:unless="${utilisateur}">
+                <a class="bouton bouton-fantome" th:href="@{/connexion}">Connexion</a>
+                <a class="bouton bouton-fantome" th:href="@{/inscription}">Créer un compte</a>
+            </th:block>
+            <details class="profil" th:if="${utilisateur}">
+                <summary aria-label="Menu du profil">
+                    <span class="profil-avatar" th:text="${#strings.substring(utilisateur, 0, 1)}">A</span>
+                    <span>Profil</span>
+                </summary>
+                <div class="profil-menu">
+                    <p th:text="${utilisateur}"></p>
+                    <th:block th:if="${estClient}">
+                        <a th:href="@{/espace}">Mes réservations</a>
+                        <a th:href="@{/espace/profil}">Mon profil</a>
+                    </th:block>
+                    <th:block th:if="${estPersonnel}">
+                        <a th:href="@{/tableau-de-bord}">Back-office</a>
+                        <a th:href="@{/mon-compte}">Mon compte</a>
+                    </th:block>
+                    <form th:action="@{/deconnexion}" method="post"><button type="submit">Déconnexion</button></form>
+                </div>
+            </details>
+        </div>
+    </div>
+</header>
+<main th:replace="${contenu}"></main>
+<footer class="site-pied">
+    <div class="conteneur site-pied-contenu">
+        <a class="marque" th:href="@{/}"><img th:src="@{/images/logo.svg}" alt=""> AutoLoc</a>
+        <span>Projet pédagogique ECE : le paiement en ligne est simulé.</span>
+        <a th:href="@{/catalogue}">Voir les véhicules</a>
+    </div>
+</footer>
+</body>
+</html>
+
+<!-- A vehicle card of the catalogue. -->
+<a th:fragment="carte(carte)" class="carte-vehicule" data-inclinable data-reveler
+   th:with="v=${carte.vehicule()}"
+   th:href="${debut != null and carte.montant() != null} ? @{/catalogue/{id}(id=${v.idVehicule},debut=${debut},fin=${fin})} : @{/catalogue/{id}(id=${v.idVehicule})}">
+    <div class="carte-visuel">
+        <span class="carte-categorie" th:text="${v.categorie.libelle}"></span>
+        <svg class="illustration" aria-hidden="true" th:classappend="'teinte-' + ${v.teinte}">
+            <use th:href="@{/images/vehicules.svg} + '#' + ${v.categorie}"></use>
+        </svg>
+    </div>
+    <div class="carte-corps">
+        <div>
+            <h3 th:text="|${v.marque} ${v.modele}|"></h3>
+            <p class="carte-agence" th:text="${v.agence?.nom} ?: 'Agence à confirmer'"></p>
+        </div>
+        <ul class="etiquettes" th:unless="${v.equipements.isEmpty()}">
+            <li th:each="equipement : ${v.equipements}"><span th:text="${equipement.libelle}"></span></li>
+        </ul>
+        <div class="carte-pied">
+            <span class="prix" th:if="${carte.montant() == null}">
+                <span th:text="${#numbers.formatDecimal(v.tarifJournalier, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span>
+                <small>/ jour</small>
+            </span>
+            <span class="prix" th:if="${carte.montant() != null}">
+                <span th:text="${#numbers.formatDecimal(carte.montant(), 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span>
+                <small th:text="|pour ${carte.jours()} jour${carte.jours() > 1 ? 's' : ''}|"></small>
+            </span>
+            <span class="lien-fleche">Voir →</span>
+        </div>
+    </div>
+</a>
+
+<!-- The four steps of a booking. -->
+<ol th:fragment="etapes(courante)" class="etapes-reservation" aria-label="Étapes de la réservation">
+    <li th:classappend="${courante == 1} ? 'courante' : 'faite'">1. Véhicule et dates</li>
+    <li th:classappend="${courante == 2} ? 'courante' : (${courante > 2} ? 'faite')">2. Paiement</li>
+    <li th:classappend="${courante == 3} ? 'courante'">3. Confirmation</li>
+</ol>
+
+<!-- Tabs of the client area. -->
+<section th:fragment="espace-tete(onglet, titre, texte)" class="espace-tete">
+    <div class="conteneur">
+        <h1 th:text="${titre}"></h1>
+        <p th:text="${texte}"></p>
+        <nav class="espace-onglets" aria-label="Mon espace">
+            <a th:href="@{/espace}" th:classappend="${onglet == 'reservations'} ? 'actif'">Mes réservations</a>
+            <a th:href="@{/catalogue}">Réserver un véhicule</a>
+            <a th:href="@{/espace/profil}" th:classappend="${onglet == 'profil'} ? 'actif'">Mon profil</a>
+        </nav>
+    </div>
+</section>

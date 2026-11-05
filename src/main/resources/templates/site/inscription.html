@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Créer un compte - AutoLoc</title>
+</head>
+<body>
+<main class="ecran-compte">
+    <div class="carte-compte carte-compte-large">
+        <h1>Créer votre compte</h1>
+        <p class="introduction">Pour réserver et retrouver vos locations en un seul endroit.</p>
+        <form th:action="@{/inscription}" th:object="${form}" method="post">
+            <p class="alerte alerte-erreur" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#fields.globalErrors()[0]}"></p>
+            <div class="ligne-deux">
+                <div class="champ">
+                    <label th:for="prenom">Prénom</label>
+                    <input type="text" autocomplete="given-name" maxlength="50" required th:field="*{prenom}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="nom">Nom</label>
+                    <input type="text" autocomplete="family-name" maxlength="50" required th:field="*{nom}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></p>
+                </div>
+            </div>
+            <div class="champ">
+                <label th:for="email">Adresse e-mail</label>
+                <input type="email" autocomplete="email" maxlength="100" required th:field="*{email}" th:errorclass="invalide">
+                <p class="erreur-champ" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+            </div>
+            <div class="ligne-deux">
+                <div class="champ">
+                    <label th:for="telephone">Téléphone</label>
+                    <input type="tel" autocomplete="tel" maxlength="20" required th:field="*{telephone}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="numPermis">Numéro de permis</label>
+                    <input type="text" autocomplete="off" maxlength="30" required th:field="*{numPermis}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('numPermis')}" th:errors="*{numPermis}"></p>
+                </div>
+            </div>
+            <div class="ligne-deux">
+                <div class="champ">
+                    <label for="motDePasse">Mot de passe (8 caractères minimum)</label>
+                    <input type="password" id="motDePasse" name="motDePasse" autocomplete="new-password" minlength="8" maxlength="72" required th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('motDePasse')}" th:errors="*{motDePasse}"></p>
+                </div>
+                <div class="champ">
+                    <label for="confirmation">Confirmer le mot de passe</label>
+                    <input type="password" id="confirmation" name="confirmation" autocomplete="new-password" minlength="8" maxlength="72" required th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('confirmation')}" th:errors="*{confirmation}"></p>
+                </div>
+            </div>
+            <button class="bouton bouton-principal bouton-large" type="submit">Créer mon compte</button>
+        </form>
+        <p class="bas-carte">Déjà un compte ? <a th:href="@{/connexion}">Se connecter</a></p>
+    </div>
+</main>
+</body>
+</html>

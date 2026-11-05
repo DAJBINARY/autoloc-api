@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Employés - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${modification} ? 'Modifier l\'employé' : 'Nouvel employé'">Nouvel employé</h1>
+    <form class="formulaire" th:action="@{${action}}" th:object="${objet}" method="post">
+        <p class="alerte alerte-erreur" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#fields.globalErrors()[0]}"></p>
+            <div class="champ">
+                <label for="agence">Agence</label>
+                <select id="agence" name="agence" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="choix : ${agences}" th:value="${choix.idAgence}" th:text="${choix.nom}"
+                            th:selected="${objet.agence?.idAgence == choix.idAgence}"></option>
+                </select>
+                <p class="aide" th:if="${#lists.isEmpty(agences)}">Aucune agence pour le moment. <a th:href="@{/agences/nouveau}">En créer un</a></p>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('agence')}" th:errors="*{agence}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="nom">Nom</label>
+                <input type="text" th:field="*{nom}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="prenom">Prénom</label>
+                <input type="text" th:field="*{prenom}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="role">Rôle</label>
+                <select th:field="*{role}" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="valeur : ${roles}" th:value="${valeur}" th:text="${valeur.libelle}"></option>
+                </select>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></p>
+            </div>
+            <fieldset class="champ groupe">
+                <legend>Compte de connexion (facultatif)</legend>
+                <div class="champ">
+                    <label th:for="identifiant">Identifiant</label>
+                    <input type="text" maxlength="50" autocomplete="off" th:field="*{identifiant}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('identifiant')}" th:errors="*{identifiant}"></p>
+                </div>
+                <div class="champ">
+                    <label for="nouveauMotDePasse" th:text="${objet.aUnCompte()} ? 'Nouveau mot de passe (laisser vide pour le conserver)' : 'Mot de passe'"></label>
+                    <input type="password" id="nouveauMotDePasse" name="nouveauMotDePasse" minlength="8" maxlength="72"
+                           autocomplete="new-password" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('nouveauMotDePasse')}" th:errors="*{nouveauMotDePasse}"></p>
+                </div>
+            </fieldset>
+        <div class="boutons">
+            <button class="bouton bouton-principal" type="submit">Enregistrer</button>
+            <a class="bouton" th:href="@{/employes}">Annuler</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

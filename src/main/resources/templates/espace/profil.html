@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Mon profil - AutoLoc</title>
+</head>
+<body>
+<main>
+    <section th:replace="~{fragments/site :: espace-tete('profil', 'Mon profil', ${client.email})}"></section>
+    <div class="conteneur espace-page">
+        <p class="alerte alerte-succes" role="status" th:if="${succes}" th:text="${succes}"></p>
+        <p class="alerte alerte-erreur" role="alert" th:if="${erreur}" th:text="${erreur}"></p>
+        <div class="deux-colonnes" style="gap: 22px">
+            <form class="formulaire" th:action="@{/espace/profil}" th:object="${form}" method="post">
+                <h2>Mes informations</h2>
+                <div class="champ">
+                    <label th:for="prenom">Prénom</label>
+                    <input type="text" maxlength="50" required th:field="*{prenom}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="nom">Nom</label>
+                    <input type="text" maxlength="50" required th:field="*{nom}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="telephone">Téléphone</label>
+                    <input type="tel" maxlength="20" required th:field="*{telephone}" th:errorclass="invalide">
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></p>
+                </div>
+                <p class="aide" th:text="|Permis : ${client.numPermis}. Pour le modifier, contactez votre agence.|"></p>
+                <div class="boutons"><button class="bouton bouton-principal" type="submit">Enregistrer</button></div>
+            </form>
+            <form class="formulaire" th:action="@{/espace/mot-de-passe}" method="post">
+                <h2>Mot de passe</h2>
+                <div class="champ">
+                    <label for="actuel">Mot de passe actuel</label>
+                    <input type="password" id="actuel" name="actuel" autocomplete="current-password" required>
+                </div>
+                <div class="champ">
+                    <label for="nouveau">Nouveau mot de passe (8 caractères minimum)</label>
+                    <input type="password" id="nouveau" name="nouveau" autocomplete="new-password" minlength="8" maxlength="72" required>
+                </div>
+                <div class="champ">
+                    <label for="confirmation">Confirmer le nouveau mot de passe</label>
+                    <input type="password" id="confirmation" name="confirmation" autocomplete="new-password" minlength="8" maxlength="72" required>
+                </div>
+                <div class="boutons"><button class="bouton bouton-principal" type="submit">Changer le mot de passe</button></div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

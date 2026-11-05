@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Page introuvable - AutoLoc</title>
+</head>
+<body>
+<main class="ecran-compte">
+    <div class="carte-compte">
+        <h1>Page introuvable</h1>
+        <p class="introduction">L'élément demandé n'existe pas ou a été supprimé.</p>
+        <a class="bouton bouton-principal bouton-large" th:href="@{/}">Retour à l'accueil</a>
+    </div>
+</main>
+</body>
+</html>

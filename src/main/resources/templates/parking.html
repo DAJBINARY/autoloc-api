@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Parking - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1>Parking</h1>
+    <form class="filtres" th:action="@{/parking}" method="get">
+        <div class="champ">
+            <label for="agence">Agence</label>
+            <select id="agence" name="agence">
+                <option th:each="choix : ${agences}" th:value="${choix.idAgence}" th:text="${choix.nom}"
+                        th:selected="${agence?.idAgence == choix.idAgence}"></option>
+            </select>
+        </div>
+        <button class="bouton bouton-principal" type="submit">Afficher</button>
+    </form>
+    <p class="vide-ligne" th:if="${agence == null}">Créez d'abord une agence.</p>
+    <th:block th:if="${agence != null}">
+        <div th:replace="~{fragments/parking :: plan(${places}, true)}"></div>
+        <p class="aide">Cliquez sur une voiture pour ouvrir sa fiche. Le numéro de place se règle dans la fiche du véhicule.</p>
+    </th:block>
+</main>
+</body>
+</html>

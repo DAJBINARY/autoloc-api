@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Confirmation - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="conteneur espace-page">
+        <ol th:replace="~{fragments/site :: etapes(3)}"></ol>
+        <div class="confirmation">
+            <svg class="coche" viewBox="0 0 86 86" aria-hidden="true">
+                <circle cx="43" cy="43" r="42"/>
+                <path d="M25 44l13 13 24-27"/>
+            </svg>
+            <th:block th:if="${reservation.statut.name() == 'CONFIRMEE'}">
+                <h1>C'est réservé !</h1>
+                <p class="vide-ligne">Votre paiement est enregistré et votre véhicule vous attend.</p>
+            </th:block>
+            <th:block th:if="${reservation.statut.name() == 'EN_ATTENTE'}">
+                <h1>Demande enregistrée</h1>
+                <p class="vide-ligne">Vous réglerez à l'agence. Votre réservation sera confirmée par notre équipe.</p>
+            </th:block>
+            <th:block th:unless="${reservation.statut.name() == 'CONFIRMEE' or reservation.statut.name() == 'EN_ATTENTE'}">
+                <h1 th:text="|Réservation ${reservation.statut.libelle}|"></h1>
+            </th:block>
+            <div class="panneau">
+                <dl class="recap" style="margin: 0; padding: 0; border: 0">
+                    <div><dt>Réservation</dt><dd th:text="|n°${reservation.idReservation}|"></dd></div>
+                    <div><dt>Véhicule</dt><dd th:text="|${reservation.vehicule.marque} ${reservation.vehicule.modele}|"></dd></div>
+                    <div><dt>Agence</dt><dd th:text="${reservation.vehicule.agence?.nom} ?: 'À confirmer'"></dd></div>
+                    <div><dt>Départ</dt><dd th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></dd></div>
+                    <div><dt>Retour</dt><dd th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></dd></div>
+                    <div class="recap-total"><dt>Total</dt><dd th:text="${#numbers.formatDecimal(montant, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></dd></div>
+                </dl>
+            </div>
+            <div class="boutons-page">
+                <a class="bouton bouton-principal" th:if="${reservation.vehicule.agence != null}"
+                   th:href="@{/espace/reservations/{id}/parking(id=${reservation.idReservation})}">Voir ma place de parking</a>
+                <a class="bouton" th:if="${contrat != null}" th:href="@{/espace/reservations/{id}/contrat(id=${reservation.idReservation})}">Mon contrat</a>
+                <a class="bouton" th:href="@{/espace}">Mes réservations</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

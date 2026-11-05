@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Maintenances - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1>Maintenances</h1>
+        <a class="bouton bouton-principal" th:href="@{/maintenances/nouveau}">Nouvelle maintenance</a>
+    </div>
+    <form th:replace="~{fragments/commun :: recherche('Description ou véhicule')}"></form>
+    <div class="tableau-conteneur">
+        <table class="tableau">
+            <thead>
+            <tr>
+                <th>N°</th>
+                <th>Véhicule</th>
+                <th>Description</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th class="actions">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="objet : ${objets}">
+                <td><a th:if="${objet != null}" th:href="@{/maintenances/{id}(id=${objet.idMaintenance})}" th:text="${objet.idMaintenance}"></a><span th:if="${objet == null}">—</span></td>
+                <td><a th:if="${objet.vehicule != null}" th:href="@{/vehicules/{id}(id=${objet.vehicule.idVehicule})}" th:text="${objet.vehicule.libelle}"></a><span th:if="${objet.vehicule == null}">—</span></td>
+                <td><span th:text="${objet.description} ?: '—'"></span></td>
+                <td><span th:text="${objet.dateDebut != null} ? ${#temporals.format(objet.dateDebut, 'dd/MM/yyyy')} : '—'"></span></td>
+                <td><span th:text="${objet.dateFin != null} ? ${#temporals.format(objet.dateFin, 'dd/MM/yyyy')} : '—'"></span></td>
+                <td class="actions">
+                    <th:block th:replace="~{fragments/commun :: actions(${objet.idMaintenance})}"></th:block>
+                </td>
+            </tr>
+            <tr th:if="${objets.isEmpty()}">
+                <td class="vide" colspan="6" th:text="${#strings.isEmpty(q)} ? 'Aucun élément pour le moment.' : 'Aucun résultat pour cette recherche.'"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragments/commun :: pagination}"></nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Ma place de parking - AutoLoc</title>
+</head>
+<body>
+<main>
+    <section th:replace="~{fragments/site :: espace-tete('reservations', 'Ma place de parking', ${vehicule.agence.nom} + ' – ' + ${vehicule.agence.adresse} + ', ' + ${vehicule.agence.ville})}"></section>
+    <div class="conteneur espace-page">
+        <p class="alerte alerte-info" role="status" th:if="${vehicule.placeParking != null}">
+            <strong th:text="|Place n°${vehicule.placeParking}|"></strong> :
+            <span th:text="|${vehicule.marque} ${vehicule.modele}, immatriculée ${vehicule.immatriculation}.|"></span>
+        </p>
+        <p class="alerte alerte-info" role="status" th:if="${vehicule.placeParking == null}">Votre agence vous indiquera la place de votre véhicule à votre arrivée.</p>
+        <div th:replace="~{fragments/parking :: plan(${places}, false)}"></div>
+        <p style="margin-top: 18px"><a class="lien-fleche" th:href="@{/espace/reservations/{id}(id=${reservation.idReservation})}">← Retour à ma réservation</a></p>
+    </div>
+</main>
+</body>
+</html>

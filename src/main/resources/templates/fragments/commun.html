@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<form th:fragment="recherche(indice)" class="recherche" role="search" method="get" th:action="@{/{s}(s=${section})}">
+    <input type="search" name="q" th:value="${q}" th:placeholder="${indice}" th:aria-label="${indice}">
+    <button class="bouton" type="submit">Rechercher</button>
+    <a class="bouton" th:unless="${#strings.isEmpty(q)}" th:href="@{/{s}(s=${section})}">Effacer</a>
+</form>
+
+<nav th:fragment="pagination" class="pagination" aria-label="Pagination" th:if="${objets.totalPages > 1}">
+    <a class="bouton" th:if="${objets.hasPrevious()}"
+       th:href="@{/{s}(s=${section},q=${q},page=${objets.number - 1})}">Précédent</a>
+    <span th:text="|Page ${objets.number + 1} sur ${objets.totalPages} (${objets.totalElements} éléments)|"></span>
+    <a class="bouton" th:if="${objets.hasNext()}"
+       th:href="@{/{s}(s=${section},q=${q},page=${objets.number + 1})}">Suivant</a>
+</nav>
+
+<th:block th:fragment="actions(id)">
+    <a class="bouton" th:href="@{/{s}/{id}(s=${section},id=${id})}">Voir</a>
+    <a class="bouton" th:if="${estManager or (section != 'agences' and section != 'employes')}"
+       th:href="@{/{s}/{id}/modifier(s=${section},id=${id})}">Modifier</a>
+    <form th:if="${estManager}" th:action="@{/{s}/{id}/supprimer(s=${section},id=${id})}" method="post"
+          onsubmit="return confirm('Supprimer cet élément ?');">
+        <button class="bouton bouton-danger" type="submit">Supprimer</button>
+    </form>
+</th:block>
+
+</body>
+</html>

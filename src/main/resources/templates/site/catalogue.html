@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Véhicules disponibles - AutoLoc</title>
+</head>
+<body>
+<main>
+    <section class="bandeau">
+        <div class="conteneur">
+            <h1>Véhicules disponibles</h1>
+            <p>Seuls les véhicules que vous pouvez réellement louer sont affichés.</p>
+        </div>
+    </section>
+    <div class="conteneur">
+        <form class="panneau-recherche" style="grid-template-columns: repeat(auto-fit, minmax(136px, 1fr))" th:action="@{/catalogue}" method="get" data-periode aria-label="Filtrer les véhicules disponibles">
+            <div class="champ">
+                <label for="q">Marque ou modèle</label>
+                <input type="search" id="q" name="q" th:value="${q}" placeholder="Clio, Peugeot…">
+            </div>
+            <div class="champ">
+                <label for="debut">Départ</label>
+                <input type="date" id="debut" name="debut" th:value="${debut}" th:min="${aujourdhui}">
+            </div>
+            <div class="champ">
+                <label for="fin">Retour</label>
+                <input type="date" id="fin" name="fin" th:value="${fin}" th:min="${debut ?: aujourdhui}">
+            </div>
+            <div class="champ">
+                <label for="categorie">Catégorie</label>
+                <select id="categorie" name="categorie">
+                    <option value="">Toutes</option>
+                    <option th:each="choix : ${categories}" th:value="${choix}" th:text="${choix.libelle}" th:selected="${categorie == choix}"></option>
+                </select>
+            </div>
+            <div class="champ">
+                <label for="agence">Agence</label>
+                <select id="agence" name="agence">
+                    <option value="">Toutes</option>
+                    <option th:each="choix : ${agences}" th:value="${choix.idAgence}" th:text="${choix.nom}" th:selected="${agence == choix.idAgence}"></option>
+                </select>
+            </div>
+            <button class="bouton bouton-principal" type="submit">Rechercher</button>
+        </form>
+    </div>
+    <section class="section conteneur" style="padding-top: 34px">
+        <p class="alerte alerte-erreur" role="alert" th:if="${erreur}" th:text="${erreur}"></p>
+        <p class="resultats" role="status">
+            <strong th:text="|${total} véhicule${total > 1 ? 's' : ''} disponible${total > 1 ? 's' : ''}|"></strong>
+            <span th:if="${datesRetenues}" th:text="|du ${#temporals.format(debut, 'dd/MM/yyyy')} au ${#temporals.format(fin, 'dd/MM/yyyy')}|"></span>
+            <span th:unless="${datesRetenues}">aujourd'hui. Indiquez vos dates pour voir le prix total.</span>
+        </p>
+        <div class="grille-vehicules" th:unless="${#lists.isEmpty(cartes)}">
+            <th:block th:each="element : ${cartes}"><a th:replace="~{fragments/site :: carte(${element})}"></a></th:block>
+        </div>
+        <div class="etat-vide" th:if="${#lists.isEmpty(cartes)}">
+            <h2>Aucun véhicule ne correspond</h2>
+            <p>Essayez d'autres dates ou retirez un filtre.</p>
+            <a class="bouton" th:href="@{/catalogue}">Effacer les filtres</a>
+        </div>
+        <nav class="pagination" aria-label="Pagination" th:if="${pages > 1}">
+            <a class="bouton" th:if="${page > 0}" th:href="@{/catalogue(q=${q},debut=${debut},fin=${fin},categorie=${categorie},agence=${agence},page=${page - 1})}">Précédent</a>
+            <span th:text="|Page ${page + 1} sur ${pages}|"></span>
+            <a class="bouton" th:if="${page + 1 < pages}" th:href="@{/catalogue(q=${q},debut=${debut},fin=${fin},categorie=${categorie},agence=${agence},page=${page + 1})}">Suivant</a>
+        </nav>
+    </section>
+</main>
+</body>
+</html>

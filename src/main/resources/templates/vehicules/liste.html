@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Véhicules - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1>Véhicules</h1>
+        <a class="bouton bouton-principal" th:href="@{/vehicules/nouveau}">Nouveau véhicule</a>
+    </div>
+    <form th:replace="~{fragments/commun :: recherche('Immatriculation, marque, modèle ou agence')}"></form>
+    <div class="tableau-conteneur">
+        <table class="tableau">
+            <thead>
+            <tr>
+                <th>Immatriculation</th>
+                <th>Marque</th>
+                <th>Modèle</th>
+                <th>Catégorie</th>
+                <th>Agence</th>
+                <th class="nombre">Tarif journalier</th>
+                <th>Statut</th>
+                <th class="actions">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="objet : ${objets}">
+                <td><a th:if="${objet != null}" th:href="@{/vehicules/{id}(id=${objet.idVehicule})}" th:text="${objet.immatriculation}"></a><span th:if="${objet == null}">—</span></td>
+                <td><span th:text="${objet.marque} ?: '—'"></span></td>
+                <td><span th:text="${objet.modele} ?: '—'"></span></td>
+                <td><span th:text="${objet.categorie?.libelle} ?: '—'"></span></td>
+                <td><a th:if="${objet.agence != null}" th:href="@{/agences/{id}(id=${objet.agence.idAgence})}" th:text="${objet.agence.nom}"></a><span th:if="${objet.agence == null}">—</span></td>
+                <td class="nombre"><span th:text="${#numbers.formatDecimal(objet.tarifJournalier, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></td>
+                <td><span class="badge" th:classappend="${'badge-' + #strings.toLowerCase(objet.statut)}" th:text="${objet.statut.libelle}"></span></td>
+                <td class="actions">
+                    <th:block th:replace="~{fragments/commun :: actions(${objet.idVehicule})}"></th:block>
+                </td>
+            </tr>
+            <tr th:if="${objets.isEmpty()}">
+                <td class="vide" colspan="8" th:text="${#strings.isEmpty(q)} ? 'Aucun élément pour le moment.' : 'Aucun résultat pour cette recherche.'"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragments/commun :: pagination}"></nav>
+</main>
+</body>
+</html>

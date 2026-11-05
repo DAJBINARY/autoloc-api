@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Agences - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1>Agences</h1>
+        <a class="bouton bouton-principal" th:if="${estManager}" th:href="@{/agences/nouveau}">Nouvelle agence</a>
+    </div>
+    <form th:replace="~{fragments/commun :: recherche('Nom, ville ou adresse')}"></form>
+    <div class="tableau-conteneur">
+        <table class="tableau">
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Ville</th>
+                <th>Adresse</th>
+                <th>Téléphone</th>
+                <th class="actions">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="objet : ${objets}">
+                <td><a th:if="${objet != null}" th:href="@{/agences/{id}(id=${objet.idAgence})}" th:text="${objet.nom}"></a><span th:if="${objet == null}">—</span></td>
+                <td><span th:text="${objet.ville} ?: '—'"></span></td>
+                <td><span th:text="${objet.adresse} ?: '—'"></span></td>
+                <td><span th:text="${objet.telephone} ?: '—'"></span></td>
+                <td class="actions">
+                    <th:block th:replace="~{fragments/commun :: actions(${objet.idAgence})}"></th:block>
+                </td>
+            </tr>
+            <tr th:if="${objets.isEmpty()}">
+                <td class="vide" colspan="5" th:text="${#strings.isEmpty(q)} ? 'Aucun élément pour le moment.' : 'Aucun résultat pour cette recherche.'"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragments/commun :: pagination}"></nav>
+</main>
+</body>
+</html>

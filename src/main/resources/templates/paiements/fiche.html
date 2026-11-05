@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Paiement - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1 th:text="${'Paiement n°' + objet.idPaiement}">Paiement</h1>
+        <div class="boutons-page">
+            <a class="bouton" th:href="@{/paiements/{id}/modifier(id=${objet.idPaiement})}">Modifier</a>
+            <a class="bouton" th:href="@{/paiements}">Retour à la liste</a>
+        </div>
+    </div>
+    <dl class="fiche">
+        <div>
+            <dt>Contrat</dt>
+            <dd><a th:if="${objet.contrat != null}" th:href="@{/contrats/{id}(id=${objet.contrat.idContrat})}" th:text="${objet.contrat.libelle}"></a><span th:if="${objet.contrat == null}">—</span></dd>
+        </div>
+        <div>
+            <dt>Date</dt>
+            <dd><span th:text="${objet.datePaiement != null} ? ${#temporals.format(objet.datePaiement, 'dd/MM/yyyy')} : '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Mode</dt>
+            <dd><span th:text="${objet.modePaiement?.libelle} ?: '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Montant</dt>
+            <dd><span th:text="${#numbers.formatDecimal(objet.montant, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></dd>
+        </div>
+    </dl>
+</main>
+</body>
+</html>

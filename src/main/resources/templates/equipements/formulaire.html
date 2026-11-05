@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Équipements - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${modification} ? 'Modifier l\'équipement' : 'Nouvel équipement'">Nouvel équipement</h1>
+    <form class="formulaire" th:action="@{${action}}" th:object="${objet}" method="post">
+        <p class="alerte alerte-erreur" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#fields.globalErrors()[0]}"></p>
+            <div class="champ">
+                <label th:for="libelle">Libellé</label>
+                <input type="text" th:field="*{libelle}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('libelle')}" th:errors="*{libelle}"></p>
+            </div>
+        <div class="boutons">
+            <button class="bouton bouton-principal" type="submit">Enregistrer</button>
+            <a class="bouton" th:href="@{/equipements}">Annuler</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

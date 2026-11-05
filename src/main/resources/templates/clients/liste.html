@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Clients - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1>Clients</h1>
+        <a class="bouton bouton-principal" th:href="@{/clients/nouveau}">Nouveau client</a>
+    </div>
+    <form th:replace="~{fragments/commun :: recherche('Nom, e-mail, téléphone ou permis')}"></form>
+    <div class="tableau-conteneur">
+        <table class="tableau">
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>E-mail</th>
+                <th>Téléphone</th>
+                <th>Permis</th>
+                <th>Inscription</th>
+                <th class="actions">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="objet : ${objets}">
+                <td><a th:if="${objet != null}" th:href="@{/clients/{id}(id=${objet.idClient})}" th:text="${objet.nomComplet}"></a><span th:if="${objet == null}">—</span></td>
+                <td><span th:text="${objet.email} ?: '—'"></span></td>
+                <td><span th:text="${objet.telephone} ?: '—'"></span></td>
+                <td><span th:text="${objet.numPermis} ?: '—'"></span></td>
+                <td><span th:text="${objet.dateInscription != null} ? ${#temporals.format(objet.dateInscription, 'dd/MM/yyyy')} : '—'"></span></td>
+                <td class="actions">
+                    <th:block th:replace="~{fragments/commun :: actions(${objet.idClient})}"></th:block>
+                </td>
+            </tr>
+            <tr th:if="${objets.isEmpty()}">
+                <td class="vide" colspan="6" th:text="${#strings.isEmpty(q)} ? 'Aucun élément pour le moment.' : 'Aucun résultat pour cette recherche.'"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragments/commun :: pagination}"></nav>
+</main>
+</body>
+</html>

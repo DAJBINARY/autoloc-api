@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Connexion - AutoLoc</title>
+</head>
+<body>
+<main class="ecran-compte">
+    <div class="carte-compte">
+        <h1>Connexion</h1>
+        <p class="introduction">Avec votre adresse e-mail, ou votre identifiant si vous êtes employé.</p>
+        <p class="alerte alerte-succes" role="status" th:if="${succes}" th:text="${succes}"></p>
+        <p class="alerte alerte-erreur" role="alert" th:if="${erreur}" th:text="${erreur}"></p>
+        <p class="alerte alerte-erreur" role="alert" th:if="${param.error}">Identifiant ou mot de passe incorrect.</p>
+        <p class="alerte alerte-succes" role="status" th:if="${param.deconnecte}">Vous êtes déconnecté.</p>
+        <form th:action="@{/connexion}" method="post">
+            <div class="champ">
+                <label for="identifiant">E-mail ou identifiant</label>
+                <input type="text" id="identifiant" name="identifiant" autocomplete="username" autofocus required>
+            </div>
+            <div class="champ">
+                <label for="motDePasse">Mot de passe</label>
+                <input type="password" id="motDePasse" name="motDePasse" autocomplete="current-password" required>
+            </div>
+            <button class="bouton bouton-principal bouton-large" type="submit">Se connecter</button>
+        </form>
+        <p class="bas-carte">Pas encore de compte ? <a th:href="@{/inscription}">Créer un compte</a></p>
+        <p class="aide" style="text-align: center" th:if="${premierCompte}">Aucun compte employé n'existe encore. <a th:href="@{/premiere-connexion}">Créer le premier compte manager</a></p>
+    </div>
+</main>
+</body>
+</html>

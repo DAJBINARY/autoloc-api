@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Réservation - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1 th:text="${'Réservation n°' + objet.idReservation}">Réservation</h1>
+        <div class="boutons-page">
+            <form th:if="${objet.statut.name() == 'EN_ATTENTE'}" class="en-ligne" th:action="@{/reservations/{id}/confirmer(id=${objet.idReservation})}" method="post"><button class="bouton bouton-principal" type="submit">Confirmer</button></form>
+            <form th:if="${objet.statut.name() == 'CONFIRMEE' and objet.dateDepart == null}" class="en-ligne" th:action="@{/reservations/{id}/depart(id=${objet.idReservation})}" method="post"><button class="bouton bouton-principal" type="submit">Enregistrer le départ</button></form>
+            <form th:if="${objet.enCours}" class="en-ligne" th:action="@{/reservations/{id}/retour(id=${objet.idReservation})}" method="post"><button class="bouton bouton-principal" type="submit">Enregistrer le retour</button></form>
+            <form th:if="${(objet.statut.name() == 'EN_ATTENTE' or objet.statut.name() == 'CONFIRMEE') and objet.dateDepart == null}" class="en-ligne" th:action="@{/reservations/{id}/annuler(id=${objet.idReservation})}" method="post" onsubmit="return confirm('Annuler cette réservation ?');"><button class="bouton bouton-danger" type="submit">Annuler la réservation</button></form>
+            <a class="bouton" th:href="@{/reservations/{id}/modifier(id=${objet.idReservation})}">Modifier</a>
+            <a class="bouton" th:href="@{/reservations}">Retour à la liste</a>
+        </div>
+    </div>
+    <dl class="fiche">
+        <div>
+            <dt>Client</dt>
+            <dd><a th:if="${objet.client != null}" th:href="@{/clients/{id}(id=${objet.client.idClient})}" th:text="${objet.client.nomComplet}"></a><span th:if="${objet.client == null}">—</span></dd>
+        </div>
+        <div>
+            <dt>Véhicule</dt>
+            <dd><a th:if="${objet.vehicule != null}" th:href="@{/vehicules/{id}(id=${objet.vehicule.idVehicule})}" th:text="${objet.vehicule.libelle}"></a><span th:if="${objet.vehicule == null}">—</span></dd>
+        </div>
+        <div>
+            <dt>Date de début</dt>
+            <dd><span th:text="${objet.dateDebut != null} ? ${#temporals.format(objet.dateDebut, 'dd/MM/yyyy')} : '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Date de fin</dt>
+            <dd><span th:text="${objet.dateFin != null} ? ${#temporals.format(objet.dateFin, 'dd/MM/yyyy')} : '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Statut</dt>
+            <dd><span class="badge" th:classappend="${'badge-' + #strings.toLowerCase(objet.statut)}" th:text="${objet.statut.libelle}"></span></dd>
+        </div>
+        <div>
+            <dt>Départ effectif</dt>
+            <dd th:text="${objet.dateDepart != null} ? ${#temporals.format(objet.dateDepart, 'dd/MM/yyyy')} : '—'"></dd>
+        </div>
+        <div>
+            <dt>Retour effectif</dt>
+            <dd th:text="${objet.dateRetour != null} ? ${#temporals.format(objet.dateRetour, 'dd/MM/yyyy')} : '—'"></dd>
+        </div>
+    </dl>
+    <section class="bloc">
+        <div class="titre-bloc">
+            <h2>Contrat</h2>
+            <a class="bouton bouton-principal" th:if="${contrat == null}"
+               th:href="@{/contrats/nouveau(reservation=${objet.idReservation})}">Établir le contrat</a>
+        </div>
+        <p th:if="${contrat != null}"><a th:href="@{/contrats/{id}(id=${contrat.idContrat})}" th:text="|Contrat n°${contrat.idContrat}|"></a></p>
+        <p class="vide-ligne" th:if="${contrat == null}">Aucun contrat pour cette réservation.</p>
+    </section>
+</main>
+</body>
+</html>

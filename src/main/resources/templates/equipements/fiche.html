@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Équipement - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1 th:text="${objet.libelle}">Équipement</h1>
+        <div class="boutons-page">
+            <a class="bouton" th:href="@{/equipements/{id}/modifier(id=${objet.idEquipement})}">Modifier</a>
+            <a class="bouton" th:href="@{/equipements}">Retour à la liste</a>
+        </div>
+    </div>
+    <dl class="fiche">
+        <div>
+            <dt>Libellé</dt>
+            <dd><span th:text="${objet.libelle} ?: '—'"></span></dd>
+        </div>
+    </dl>
+    <section class="bloc">
+        <div class="titre-bloc">
+            <h2>Véhicules équipés</h2>
+        </div>
+        <div class="tableau-conteneur">
+            <table class="tableau">
+                <thead>
+                <tr>
+                    <th>Véhicule</th>
+                    <th>Catégorie</th>
+                    <th class="nombre">Tarif journalier</th>
+                    <th>Statut</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ligne : ${vehicules}">
+                    <td><a th:if="${ligne != null}" th:href="@{/vehicules/{id}(id=${ligne.idVehicule})}" th:text="${ligne.libelle}"></a><span th:if="${ligne == null}">—</span></td>
+                    <td><span th:text="${ligne.categorie?.libelle} ?: '—'"></span></td>
+                    <td class="nombre"><span th:text="${#numbers.formatDecimal(ligne.tarifJournalier, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></td>
+                    <td><span class="badge" th:classappend="${'badge-' + #strings.toLowerCase(ligne.statut)}" th:text="${ligne.statut.libelle}"></span></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(vehicules)}">
+                    <td class="vide" colspan="4">Aucun véhicule n'a cet équipement.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Disponibilités - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1>Disponibilités</h1>
+    <form class="filtres" th:action="@{/disponibilites}" method="get">
+        <div class="champ">
+            <label for="debut">Du</label>
+            <input type="date" id="debut" name="debut" th:value="${debut}" required>
+        </div>
+        <div class="champ">
+            <label for="fin">Au</label>
+            <input type="date" id="fin" name="fin" th:value="${fin}" required>
+        </div>
+        <div class="champ">
+            <label for="categorie">Catégorie</label>
+            <select id="categorie" name="categorie">
+                <option value="">Toutes</option>
+                <option th:each="choix : ${categories}" th:value="${choix}" th:text="${choix.libelle}" th:selected="${categorie == choix}"></option>
+            </select>
+        </div>
+        <div class="champ">
+            <label for="agence">Agence</label>
+            <select id="agence" name="agence">
+                <option value="">Toutes</option>
+                <option th:each="choix : ${agences}" th:value="${choix.idAgence}" th:text="${choix.nom}" th:selected="${agence == choix.idAgence}"></option>
+            </select>
+        </div>
+        <button class="bouton bouton-principal" type="submit">Rechercher</button>
+    </form>
+    <p class="vide-ligne" th:if="${resultats == null and erreur == null}">Choisissez des dates pour voir les véhicules libres.</p>
+    <div class="tableau-conteneur" th:if="${resultats != null}">
+        <table class="tableau">
+            <thead>
+            <tr>
+                <th>Véhicule</th>
+                <th>Catégorie</th>
+                <th>Agence</th>
+                <th class="nombre">Tarif journalier</th>
+                <th class="nombre">Prix de la location</th>
+                <th class="actions">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="resultat : ${resultats}">
+                <td><a th:href="@{/vehicules/{id}(id=${resultat.vehicule().idVehicule})}" th:text="${resultat.vehicule().libelle}"></a></td>
+                <td th:text="${resultat.vehicule().categorie.libelle}"></td>
+                <td th:text="${resultat.vehicule().agence?.nom} ?: '—'"></td>
+                <td class="nombre" th:text="${#numbers.formatDecimal(resultat.vehicule().tarifJournalier, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></td>
+                <td class="nombre" th:text="${#numbers.formatDecimal(resultat.montant(), 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></td>
+                <td class="actions">
+                    <a class="bouton" th:href="@{/reservations/nouveau(vehicule=${resultat.vehicule().idVehicule},debut=${debut},fin=${fin})}">Réserver</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(resultats)}">
+                <td class="vide" colspan="6">Aucun véhicule libre sur ces dates.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

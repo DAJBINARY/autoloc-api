@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Paiement - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="conteneur espace-page">
+        <ol th:replace="~{fragments/site :: etapes(2)}"></ol>
+        <div class="fiche-vehicule">
+            <div class="panneau">
+                <h1 style="margin-bottom: 14px">Paiement</h1>
+                <div class="alerte alerte-info mention-test">
+                    <span>Paiement simulé : aucune somme n'est prélevée et rien n'est conservé. N'utilisez pas votre vraie carte.</span>
+                    <button class="bouton" type="button" data-carte-test>Remplir avec une carte de test</button>
+                </div>
+                <div class="carte-bancaire" aria-hidden="true">
+                    <div class="carte-puce"></div>
+                    <div class="carte-numero" data-apercu-numero>•••• •••• •••• ••••</div>
+                    <div class="carte-bas">
+                        <span data-apercu-titulaire>Titulaire</span>
+                        <span data-apercu-expiration>MM/AA</span>
+                    </div>
+                </div>
+                <form th:action="@{/espace/reservations/{id}/paiement(id=${reservation.idReservation})}" th:object="${form}" method="post" autocomplete="off">
+                    <div class="champ">
+                        <label for="titulaire">Nom sur la carte</label>
+                        <input type="text" id="titulaire" name="titulaire" data-carte-titulaire required th:value="*{titulaire}" th:errorclass="invalide">
+                        <p class="erreur-champ" th:if="${#fields.hasErrors('titulaire')}" th:errors="*{titulaire}"></p>
+                    </div>
+                    <div class="champ">
+                        <label for="numero">Numéro de carte</label>
+                        <input type="text" id="numero" name="numero" inputmode="numeric" data-carte-numero required th:errorclass="invalide">
+                        <p class="erreur-champ" th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></p>
+                    </div>
+                    <div class="ligne-dates">
+                        <div class="champ">
+                            <label for="expiration">Expiration</label>
+                            <input type="text" id="expiration" name="expiration" inputmode="numeric" placeholder="MM/AA" maxlength="5" data-carte-expiration required th:errorclass="invalide">
+                            <p class="erreur-champ" th:if="${#fields.hasErrors('expiration')}" th:errors="*{expiration}"></p>
+                        </div>
+                        <div class="champ">
+                            <label for="cryptogramme">Cryptogramme</label>
+                            <input type="text" id="cryptogramme" name="cryptogramme" inputmode="numeric" maxlength="4" data-carte-cryptogramme required th:errorclass="invalide">
+                            <p class="erreur-champ" th:if="${#fields.hasErrors('cryptogramme')}" th:errors="*{cryptogramme}"></p>
+                        </div>
+                    </div>
+                    <button class="bouton bouton-principal bouton-large" type="submit"
+                            th:text="|Payer ${#numbers.formatDecimal(montant, 1, 'WHITESPACE', 2, 'COMMA')} €|"></button>
+                </form>
+                <p class="separateur">ou</p>
+                <form th:action="@{/espace/reservations/{id}/payer-en-agence(id=${reservation.idReservation})}" method="post">
+                    <button class="bouton bouton-large" type="submit">Payer à l'agence</button>
+                    <p class="aide">Votre réservation restera en attente jusqu'à sa validation par l'agence.</p>
+                </form>
+            </div>
+            <aside class="panneau panneau-collant">
+                <h2>Récapitulatif</h2>
+                <dl class="recap">
+                    <div><dt>Véhicule</dt><dd th:text="|${reservation.vehicule.marque} ${reservation.vehicule.modele}|"></dd></div>
+                    <div><dt>Agence</dt><dd th:text="${reservation.vehicule.agence?.nom} ?: 'À confirmer'"></dd></div>
+                    <div><dt>Départ</dt><dd th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></dd></div>
+                    <div><dt>Retour</dt><dd th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></dd></div>
+                    <div><dt>Durée</dt><dd th:text="|${jours} jour${jours > 1 ? 's' : ''}|"></dd></div>
+                    <div class="recap-total"><dt>Total</dt><dd th:text="${#numbers.formatDecimal(montant, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></dd></div>
+                </dl>
+                <form th:action="@{/espace/reservations/{id}/annuler(id=${reservation.idReservation})}" method="post"
+                      onsubmit="return confirm('Annuler cette réservation ?');">
+                    <button class="bouton bouton-danger bouton-large" type="submit">Annuler la réservation</button>
+                </form>
+            </aside>
+        </div>
+    </div>
+</main>
+</body>
+</html>

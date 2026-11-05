@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>AutoLoc - Location de véhicules</title>
+</head>
+<body>
+<main>
+    <section class="heros">
+        <div class="conteneur heros-grille">
+            <div class="heros-entree">
+                <p class="surtitre">Location de véhicules</p>
+                <h1>Prenez la route, <em>sans attendre.</em></h1>
+                <p class="heros-texte">Choisissez parmi les véhicules réellement disponibles, réservez et payez en ligne, puis retrouvez votre voiture sur le parking de l'agence.</p>
+                <div class="heros-actions">
+                    <a class="bouton bouton-principal bouton-grand" th:href="@{/catalogue}">Voir les véhicules <span class="fleche" aria-hidden="true">→</span></a>
+                    <a class="bouton bouton-fantome bouton-grand" th:unless="${utilisateur}" th:href="@{/inscription}">Créer un compte</a>
+                </div>
+            </div>
+            <div class="scene3d" data-scene3d>
+                <svg class="scene3d-repli teinte-0" aria-hidden="true"><use th:href="@{/images/vehicules.svg} + '#SUV'"></use></svg>
+                <canvas data-voiture3d data-categorie="SUV" data-teinte="0"
+                        role="img" aria-label="Voiture en 3D, à faire tourner en la faisant glisser"></canvas>
+                <p class="scene3d-indice">Glissez pour faire tourner</p>
+            </div>
+        </div>
+        <div class="route" aria-hidden="true"></div>
+    </section>
+
+    <div class="conteneur">
+        <form class="panneau-recherche" th:action="@{/catalogue}" method="get" data-periode data-reveler aria-label="Rechercher un véhicule disponible">
+            <div class="champ">
+                <label for="debut">Départ</label>
+                <input type="date" id="debut" name="debut" required th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+            </div>
+            <div class="champ">
+                <label for="fin">Retour</label>
+                <input type="date" id="fin" name="fin" required th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+            </div>
+            <div class="champ">
+                <label for="categorie">Catégorie</label>
+                <select id="categorie" name="categorie">
+                    <option value="">Toutes</option>
+                    <option th:each="choix : ${categories}" th:value="${choix}" th:text="${choix.libelle}"></option>
+                </select>
+            </div>
+            <div class="champ">
+                <label for="agence">Agence</label>
+                <select id="agence" name="agence">
+                    <option value="">Toutes</option>
+                    <option th:each="choix : ${agences}" th:value="${choix.idAgence}" th:text="${choix.nom}"></option>
+                </select>
+            </div>
+            <button class="bouton bouton-principal" type="submit">Trouver un véhicule</button>
+        </form>
+    </div>
+
+    <section class="section conteneur">
+        <div class="section-titre" data-reveler>
+            <h2>Disponibles dès maintenant</h2>
+            <a class="lien-fleche" th:href="@{/catalogue}" th:text="|Voir les ${nombreDisponibles} véhicules →|"></a>
+        </div>
+        <div class="grille-vehicules" th:unless="${#lists.isEmpty(vitrine)}">
+            <th:block th:each="element : ${vitrine}"><a th:replace="~{fragments/site :: carte(${element})}"></a></th:block>
+        </div>
+        <div class="etat-vide" th:if="${#lists.isEmpty(vitrine)}">
+            <h2>Aucun véhicule disponible pour le moment</h2>
+            <p>Revenez bientôt, ou indiquez vos dates : un véhicule peut se libérer à temps.</p>
+        </div>
+    </section>
+
+    <section class="section conteneur" style="padding-top: 0">
+        <div class="section-titre" data-reveler>
+            <h2>Trois étapes, et vous roulez</h2>
+        </div>
+        <ol class="etapes">
+            <li data-reveler>
+                <h3>Choisissez</h3>
+                <p>Indiquez vos dates : seuls les véhicules libres sur toute la période s'affichent, avec le prix total.</p>
+            </li>
+            <li data-reveler>
+                <h3>Réservez</h3>
+                <p>Payez en ligne ou à l'agence. Votre contrat est disponible dans votre espace.</p>
+            </li>
+            <li data-reveler>
+                <h3>Récupérez</h3>
+                <p>Le plan du parking vous indique la place exacte de votre véhicule à l'agence.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section class="section conteneur" style="padding-top: 0">
+        <div class="bande-action" data-reveler>
+            <div>
+                <h2 th:text="|${nombreDisponibles} véhicules vous attendent|"></h2>
+                <p th:text="|Répartis dans ${nombreAgences} agences.|"></p>
+            </div>
+            <a class="bouton bouton-principal bouton-grand" th:href="@{/catalogue}">Voir les véhicules <span class="fleche" aria-hidden="true">→</span></a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

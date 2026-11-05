@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Client - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1 th:text="${objet.nomComplet}">Client</h1>
+        <div class="boutons-page">
+            <a class="bouton" th:href="@{/clients/{id}/modifier(id=${objet.idClient})}">Modifier</a>
+            <a class="bouton" th:href="@{/clients}">Retour à la liste</a>
+        </div>
+    </div>
+    <dl class="fiche">
+        <div>
+            <dt>E-mail</dt>
+            <dd><span th:text="${objet.email} ?: '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Téléphone</dt>
+            <dd><span th:text="${objet.telephone} ?: '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Permis</dt>
+            <dd><span th:text="${objet.numPermis} ?: '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Inscription</dt>
+            <dd><span th:text="${objet.dateInscription != null} ? ${#temporals.format(objet.dateInscription, 'dd/MM/yyyy')} : '—'"></span></dd>
+        </div>
+    </dl>
+    <section class="bloc">
+        <div class="titre-bloc">
+            <h2>Réservations</h2>
+            <a class="bouton" th:href="@{/reservations/nouveau(client=${objet.idClient})}">Nouvelle réservation</a>
+        </div>
+        <div class="tableau-conteneur">
+            <table class="tableau">
+                <thead>
+                <tr>
+                    <th>N°</th>
+                    <th>Véhicule</th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                    <th>Statut</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ligne : ${reservations}">
+                    <td><a th:if="${ligne != null}" th:href="@{/reservations/{id}(id=${ligne.idReservation})}" th:text="${ligne.idReservation}"></a><span th:if="${ligne == null}">—</span></td>
+                    <td><a th:if="${ligne.vehicule != null}" th:href="@{/vehicules/{id}(id=${ligne.vehicule.idVehicule})}" th:text="${ligne.vehicule.libelle}"></a><span th:if="${ligne.vehicule == null}">—</span></td>
+                    <td><span th:text="${ligne.dateDebut != null} ? ${#temporals.format(ligne.dateDebut, 'dd/MM/yyyy')} : '—'"></span></td>
+                    <td><span th:text="${ligne.dateFin != null} ? ${#temporals.format(ligne.dateFin, 'dd/MM/yyyy')} : '—'"></span></td>
+                    <td><span class="badge" th:classappend="${'badge-' + #strings.toLowerCase(ligne.statut)}" th:text="${ligne.statut.libelle}"></span></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(reservations)}">
+                    <td class="vide" colspan="5">Aucune réservation pour ce client.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

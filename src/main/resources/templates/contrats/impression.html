@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contrat de location - AutoLoc</title>
+    <link rel="icon" th:href="@{/images/logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="document">
+<div class="barre-impression">
+    <a class="bouton" th:href="${retour != null} ? @{${retour}} : @{/contrats/{id}(id=${objet.idContrat})}">Retour</a>
+    <button class="bouton bouton-principal" type="button" onclick="window.print()">Imprimer</button>
+</div>
+<article class="feuille">
+    <header>
+        <p class="marque">AutoLoc</p>
+        <h1 th:text="|Contrat de location n°${objet.idContrat}|"></h1>
+        <p th:text="|Signé le ${#temporals.format(objet.dateSignature, 'dd/MM/yyyy')}|"></p>
+    </header>
+    <section>
+        <h2>Client</h2>
+        <th:block th:with="client=${objet.reservation?.client}">
+            <p th:if="${client != null}">
+                <span th:text="${client.nomComplet}"></span><br>
+                <span th:text="|Permis : ${client.numPermis}|"></span><br>
+                <span th:text="|${client.email} – ${client.telephone}|"></span>
+            </p>
+            <p th:if="${client == null}">Non renseigné</p>
+        </th:block>
+    </section>
+    <section>
+        <h2>Véhicule et durée</h2>
+        <p th:if="${objet.reservation?.vehicule != null}" th:text="${objet.reservation.vehicule.libelle}"></p>
+        <p th:if="${objet.reservation != null}"
+           th:text="|Du ${#temporals.format(objet.reservation.dateDebut, 'dd/MM/yyyy')} au ${#temporals.format(objet.reservation.dateFin, 'dd/MM/yyyy')}|"></p>
+    </section>
+    <section>
+        <h2>Montants</h2>
+        <table class="tableau">
+            <tbody>
+            <tr><th>Montant total</th><td class="nombre" th:text="${#numbers.formatDecimal(objet.montantTotal, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></td></tr>
+            <tr><th>Déjà payé</th><td class="nombre" th:text="${#numbers.formatDecimal(paye, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></td></tr>
+            <tr><th>Reste à payer</th><td class="nombre" th:text="${#numbers.formatDecimal(reste, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></td></tr>
+            </tbody>
+        </table>
+    </section>
+    <section class="signatures">
+        <div>
+            <p>Pour AutoLoc<span th:text="${objet.employe != null} ? ' : ' + ${objet.employe.nomComplet} : ' : signature en ligne'"></span></p>
+        </div>
+        <div>
+            <p>Le client</p>
+        </div>
+    </section>
+</article>
+</body>
+</html>

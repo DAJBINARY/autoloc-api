@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Maintenances - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${modification} ? 'Modifier la maintenance' : 'Nouvelle maintenance'">Nouvelle maintenance</h1>
+    <form class="formulaire" th:action="@{${action}}" th:object="${objet}" method="post">
+        <p class="alerte alerte-erreur" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#fields.globalErrors()[0]}"></p>
+            <div class="champ">
+                <label for="vehicule">Véhicule</label>
+                <select id="vehicule" name="vehicule" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="choix : ${vehicules}" th:value="${choix.idVehicule}" th:text="${choix.libelle}"
+                            th:selected="${objet.vehicule?.idVehicule == choix.idVehicule}"></option>
+                </select>
+                <p class="aide" th:if="${#lists.isEmpty(vehicules)}">Aucun véhicule pour le moment. <a th:href="@{/vehicules/nouveau}">En créer un</a></p>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('vehicule')}" th:errors="*{vehicule}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="dateDebut">Date de début</label>
+                <input type="date" th:field="*{dateDebut}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('dateDebut')}" th:errors="*{dateDebut}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="dateFin">Date de fin (facultative)</label>
+                <input type="date" th:field="*{dateFin}" th:errorclass="invalide">
+                <p class="erreur-champ" th:if="${#fields.hasErrors('dateFin')}" th:errors="*{dateFin}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="description">Description</label>
+                <textarea rows="4" th:field="*{description}" th:errorclass="invalide" required></textarea>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+            </div>
+        <div class="boutons">
+            <button class="bouton bouton-principal" type="submit">Enregistrer</button>
+            <a class="bouton" th:href="@{/maintenances}">Annuler</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

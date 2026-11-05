@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Réserver - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="conteneur espace-page">
+        <ol th:replace="~{fragments/site :: etapes(1)}"></ol>
+        <p class="alerte alerte-erreur" role="alert" th:if="${erreur}" th:text="${erreur}"></p>
+        <div class="fiche-vehicule">
+            <div class="panneau">
+                <h1 style="margin-bottom: 4px" th:text="|${vehicule.marque} ${vehicule.modele}|"></h1>
+                <p class="vide-ligne" th:text="|${vehicule.categorie.libelle} – ${vehicule.agence?.nom ?: 'Agence à confirmer'}|"></p>
+                <div class="prochaine-visuel" style="height: 190px; margin-top: 16px">
+                    <svg class="illustration" style="width: 66%" aria-hidden="true" th:classappend="'teinte-' + ${vehicule.teinte}">
+                        <use th:href="@{/images/vehicules.svg} + '#' + ${vehicule.categorie}"></use>
+                    </svg>
+                </div>
+                <form style="margin-top: 18px" th:action="@{/espace/reservations/nouvelle}" method="get" data-periode>
+                    <input type="hidden" name="vehicule" th:value="${vehicule.idVehicule}">
+                    <div class="ligne-dates">
+                        <div class="champ">
+                            <label for="debut">Départ</label>
+                            <input type="date" id="debut" name="debut" required th:value="${debut}" th:min="${aujourdhui}">
+                        </div>
+                        <div class="champ">
+                            <label for="fin">Retour</label>
+                            <input type="date" id="fin" name="fin" required th:value="${fin}" th:min="${debut ?: aujourdhui}">
+                        </div>
+                    </div>
+                    <button class="bouton" type="submit">Mettre à jour les dates</button>
+                </form>
+            </div>
+            <aside class="panneau panneau-collant">
+                <h2>Récapitulatif</h2>
+                <p class="vide-ligne" th:unless="${datesValides}">Choisissez vos dates pour voir le prix.</p>
+                <th:block th:if="${datesValides}">
+                    <dl class="recap">
+                        <div><dt>Départ</dt><dd th:text="${#temporals.format(debut, 'dd/MM/yyyy')}"></dd></div>
+                        <div><dt>Retour</dt><dd th:text="${#temporals.format(fin, 'dd/MM/yyyy')}"></dd></div>
+                        <div><dt>Tarif</dt><dd th:text="${#numbers.formatDecimal(vehicule.tarifJournalier, 1, 'WHITESPACE', 2, 'COMMA')} + ' € / jour'"></dd></div>
+                        <div><dt>Durée</dt><dd th:text="|${jours} jour${jours > 1 ? 's' : ''}|"></dd></div>
+                        <div class="recap-total"><dt>Total</dt><dd th:text="${#numbers.formatDecimal(montant, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></dd></div>
+                    </dl>
+                    <form th:if="${libre}" th:action="@{/espace/reservations}" method="post">
+                        <input type="hidden" name="vehicule" th:value="${vehicule.idVehicule}">
+                        <input type="hidden" name="debut" th:value="${debut}">
+                        <input type="hidden" name="fin" th:value="${fin}">
+                        <button class="bouton bouton-principal bouton-large" type="submit">Continuer vers le paiement</button>
+                    </form>
+                    <p class="alerte alerte-erreur" style="margin: 0" role="alert" th:unless="${libre}">Ce véhicule n'est pas libre sur ces dates.
+                        <a th:href="@{/catalogue(debut=${debut},fin=${fin})}">Voir les véhicules libres</a></p>
+                </th:block>
+            </aside>
+        </div>
+    </div>
+</main>
+</body>
+</html>

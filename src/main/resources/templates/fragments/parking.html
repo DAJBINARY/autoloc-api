@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- liens = true for staff, who may open each vehicle. Clients see their own place, the others stay anonymous. -->
+<div th:fragment="plan(places, liens)" class="parking-scene">
+    <ol class="parking-plan" aria-label="Plan du parking">
+        <li class="place" th:each="place : ${places}" th:classappend="${place.surlignee()} ? 'place-surlignee'">
+            <span th:text="${place.numero()}"></span>
+            <a th:if="${liens and place.vehicule() != null}" th:href="@{/vehicules/{id}(id=${place.vehicule().idVehicule})}"
+               th:title="${place.vehicule().libelle}" th:aria-label="${place.vehicule().libelle}"></a>
+            <span class="place-voiture" th:if="${place.vehicule() != null}"></span>
+        </li>
+    </ol>
+</div>
+</body>
+</html>

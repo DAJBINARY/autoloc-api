@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Paiements - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${modification} ? 'Modifier le paiement' : 'Nouveau paiement'">Nouveau paiement</h1>
+    <form class="formulaire" th:action="@{${action}}" th:object="${objet}" method="post">
+        <p class="alerte alerte-erreur" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#fields.globalErrors()[0]}"></p>
+            <div class="champ">
+                <label for="contrat">Contrat</label>
+                <select id="contrat" name="contrat" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="choix : ${contrats}" th:value="${choix.idContrat}" th:text="${choix.libelle}"
+                            th:selected="${objet.contrat?.idContrat == choix.idContrat}"></option>
+                </select>
+                <p class="aide" th:if="${#lists.isEmpty(contrats)}">Aucun contrat pour le moment. <a th:href="@{/contrats/nouveau}">En créer un</a></p>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('contrat')}" th:errors="*{contrat}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="montant">Montant (€)</label>
+                <input type="number" min="0.01" step="0.01" th:field="*{montant}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('montant')}" th:errors="*{montant}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="datePaiement">Date de paiement</label>
+                <input type="date" th:field="*{datePaiement}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('datePaiement')}" th:errors="*{datePaiement}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="modePaiement">Mode de paiement</label>
+                <select th:field="*{modePaiement}" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="valeur : ${modes}" th:value="${valeur}" th:text="${valeur.libelle}"></option>
+                </select>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('modePaiement')}" th:errors="*{modePaiement}"></p>
+            </div>
+        <div class="boutons">
+            <button class="bouton bouton-principal" type="submit">Enregistrer</button>
+            <a class="bouton" th:href="@{/paiements}">Annuler</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

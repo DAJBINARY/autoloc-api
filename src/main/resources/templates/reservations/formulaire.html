@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Réservations - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1 th:text="${modification} ? 'Modifier la réservation' : 'Nouvelle réservation'">Nouvelle réservation</h1>
+    <form class="formulaire" th:action="@{${action}}" th:object="${objet}" method="post">
+        <p class="alerte alerte-erreur" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#fields.globalErrors()[0]}"></p>
+            <div class="champ">
+                <label for="client">Client</label>
+                <select id="client" name="client" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="choix : ${clients}" th:value="${choix.idClient}" th:text="${choix.nomComplet}"
+                            th:selected="${objet.client?.idClient == choix.idClient}"></option>
+                </select>
+                <p class="aide" th:if="${#lists.isEmpty(clients)}">Aucun client pour le moment. <a th:href="@{/clients/nouveau}">En créer un</a></p>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('client')}" th:errors="*{client}"></p>
+            </div>
+            <div class="champ">
+                <label for="vehicule">Véhicule</label>
+                <select id="vehicule" name="vehicule" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="choix : ${vehicules}" th:value="${choix.idVehicule}" th:text="${choix.libelle}"
+                            th:selected="${objet.vehicule?.idVehicule == choix.idVehicule}"></option>
+                </select>
+                <p class="aide" th:if="${#lists.isEmpty(vehicules)}">Aucun véhicule pour le moment. <a th:href="@{/vehicules/nouveau}">En créer un</a></p>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('vehicule')}" th:errors="*{vehicule}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="dateDebut">Date de début</label>
+                <input type="date" th:field="*{dateDebut}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('dateDebut')}" th:errors="*{dateDebut}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="dateFin">Date de fin</label>
+                <input type="date" th:field="*{dateFin}" th:errorclass="invalide" required>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('dateFin')}" th:errors="*{dateFin}"></p>
+            </div>
+            <div class="champ">
+                <label th:for="statut">Statut</label>
+                <select th:field="*{statut}" th:errorclass="invalide" required>
+                    <option value="">Choisir…</option>
+                    <option th:each="valeur : ${statuts}" th:value="${valeur}" th:text="${valeur.libelle}"></option>
+                </select>
+                <p class="erreur-champ" th:if="${#fields.hasErrors('statut')}" th:errors="*{statut}"></p>
+            </div>
+        <div class="boutons">
+            <button class="bouton bouton-principal" type="submit">Enregistrer</button>
+            <a class="bouton" th:href="@{/reservations}">Annuler</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

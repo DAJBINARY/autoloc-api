@@ -1,0 +1,1194 @@
+/* Public site and client area. Loaded after app.css, whose tokens it uses. */
+
+.site {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.site main {
+    flex: 1 0 auto;
+}
+
+.conteneur {
+    width: min(1200px, 100% - 48px);
+    margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.site-entete {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--encre);
+    border-bottom: 1px solid transparent;
+    color: #fff;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+.site-entete-defile {
+    border-bottom-color: rgba(255, 255, 255, .12);
+}
+
+.site-entete-contenu {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    min-height: 72px;
+}
+
+.site-nav {
+    display: flex;
+    gap: 4px;
+    margin-right: auto;
+}
+
+.site-nav a {
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #c9cedb;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color .15s ease, background .15s ease;
+}
+
+.site-nav a:hover,
+.site-nav a.actif {
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+}
+
+.site-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bouton-fantome {
+    background: transparent;
+    border-color: rgba(255, 255, 255, .24);
+    color: #fff;
+}
+
+.bouton-fantome:hover {
+    background: rgba(255, 255, 255, .1);
+    border-color: rgba(255, 255, 255, .45);
+}
+
+.menu-bouton {
+    display: none;
+}
+
+.profil {
+    position: relative;
+}
+
+.profil summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px 4px 4px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 999px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.profil summary::-webkit-details-marker {
+    display: none;
+}
+
+.profil-avatar {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    background: var(--accent);
+    border-radius: 50%;
+    color: var(--encre);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.profil-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 230px;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 12px;
+    box-shadow: 0 24px 48px -16px rgba(12, 15, 23, .35);
+    color: var(--texte);
+}
+
+.profil-menu p {
+    margin: 0 0 6px;
+    padding: 6px 10px 10px;
+    border-bottom: 1px solid var(--bordure);
+    color: var(--texte-doux);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.profil-menu a,
+.profil-menu button {
+    width: 100%;
+    padding: 8px 10px;
+    background: none;
+    border: 0;
+    border-radius: 8px;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.profil-menu a:hover,
+.profil-menu button:hover {
+    background: var(--fond);
+}
+
+/* ---------- Hero ---------- */
+
+.heros {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(60% 70% at 72% 42%, rgba(255, 90, 31, .22), transparent 70%),
+        radial-gradient(40% 50% at 12% 0%, rgba(62, 90, 170, .25), transparent 70%),
+        var(--encre);
+    color: #fff;
+}
+
+.heros-grille {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+    align-items: center;
+    gap: 12px;
+    min-height: min(680px, calc(100vh - 72px));
+    padding-block: 40px 130px;
+}
+
+.surtitre {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 18px;
+    color: #ffb394;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.surtitre::before {
+    content: "";
+    width: 26px;
+    height: 2px;
+    background: var(--accent);
+}
+
+.heros h1 {
+    margin: 0 0 20px;
+    font-size: clamp(44px, 6.4vw, 86px);
+    font-weight: 750;
+    letter-spacing: -.035em;
+    line-height: .98;
+}
+
+.heros h1 em {
+    color: var(--accent);
+    font-style: normal;
+}
+
+.heros-texte {
+    max-width: 480px;
+    margin: 0 0 28px;
+    color: #c4c9d6;
+    font-size: 18px;
+}
+
+.heros-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.bouton-grand {
+    min-height: 52px;
+    padding-inline: 26px;
+    border-radius: 12px;
+    font-size: 17px;
+}
+
+.bouton-grand .fleche {
+    transition: transform .18s ease;
+}
+
+.bouton-grand:hover .fleche {
+    transform: translateX(4px);
+}
+
+.scene3d {
+    position: relative;
+    height: clamp(320px, 42vw, 560px);
+    cursor: grab;
+}
+
+.scene3d:active {
+    cursor: grabbing;
+}
+
+.scene3d canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+}
+
+/* Shown when WebGL is unavailable, replaced by the live car otherwise. */
+.scene3d-repli {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(88%, 620px);
+    height: auto;
+    aspect-ratio: 320 / 120;
+    transform: translate(-50%, -50%);
+}
+
+.scene3d-prete .scene3d-repli {
+    display: none;
+}
+
+.scene3d-indice {
+    position: absolute;
+    right: 14px;
+    bottom: 8px;
+    margin: 0;
+    color: rgba(255, 255, 255, .55);
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.route {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .28) 0 46px, transparent 46px 92px);
+    animation: route-defile 2.4s linear infinite;
+}
+
+@keyframes route-defile {
+    to {
+        background-position-x: -92px;
+    }
+}
+
+/* Search panel, straddling the hero and the page. */
+.panneau-recherche {
+    position: relative;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+    align-items: end;
+    gap: 14px;
+    margin-top: -86px;
+    padding: 22px;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 18px;
+    box-shadow: 0 34px 60px -30px rgba(12, 15, 23, .45);
+}
+
+.panneau-recherche .champ {
+    margin: 0;
+}
+
+.panneau-recherche .bouton {
+    min-height: 44px;
+    padding-inline: 22px;
+}
+
+/* ---------- Sections ---------- */
+
+.section {
+    padding-block: 76px;
+}
+
+.section-titre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 30px;
+}
+
+.section-titre h2 {
+    font-size: clamp(28px, 3.6vw, 44px);
+    font-weight: 700;
+}
+
+.lien-fleche {
+    color: var(--lien);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.lien-fleche:hover {
+    text-decoration: underline;
+}
+
+.etapes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+    counter-reset: etape;
+    list-style: none;
+}
+
+.etapes li {
+    padding: 26px;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 16px;
+    counter-increment: etape;
+}
+
+.etapes li::before {
+    content: "0" counter(etape);
+    display: block;
+    margin-bottom: 14px;
+    color: var(--accent-fonce);
+    font-family: var(--titre);
+    font-size: 30px;
+    font-weight: 750;
+}
+
+.etapes h3 {
+    margin: 0 0 6px;
+    font-size: 20px;
+}
+
+.etapes p {
+    margin: 0;
+    color: var(--texte-doux);
+}
+
+/* ---------- Vehicle cards ---------- */
+
+.grille-vehicules {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 20px;
+    perspective: 1400px;
+}
+
+.carte-vehicule {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 18px;
+    color: inherit;
+    text-decoration: none;
+    transform: rotateX(var(--incline-x, 0deg)) rotateY(var(--incline-y, 0deg));
+    transition: transform .2s ease-out, box-shadow .2s ease, border-color .2s ease;
+}
+
+.carte-vehicule:hover {
+    border-color: #cfcabd;
+    box-shadow: 0 30px 50px -28px rgba(12, 15, 23, .4);
+}
+
+.carte-visuel {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 180px;
+    overflow: hidden;
+    background: linear-gradient(160deg, #1b2130, var(--encre));
+}
+
+.carte-visuel::after {
+    content: "";
+    position: absolute;
+    right: 12%;
+    bottom: 30px;
+    left: 12%;
+    height: 12px;
+    background: rgba(0, 0, 0, .5);
+    border-radius: 50%;
+    filter: blur(8px);
+}
+
+.illustration {
+    position: relative;
+    z-index: 1;
+    width: 78%;
+    height: auto;
+    aspect-ratio: 320 / 120;
+    transition: transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+
+.carte-vehicule:hover .illustration {
+    transform: translateX(10px) scale(1.04);
+}
+
+.teinte-0 {
+    color: #ff5a1f;
+}
+
+.teinte-1 {
+    color: #2f7fd6;
+}
+
+.teinte-2 {
+    color: #f1efe9;
+}
+
+.teinte-3 {
+    color: #7c8496;
+}
+
+.teinte-4 {
+    color: #f2b632;
+}
+
+.carte-categorie {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 2;
+    padding: 3px 11px;
+    background: rgba(255, 255, 255, .13);
+    backdrop-filter: blur(6px);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.carte-corps {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+    padding: 18px 20px 20px;
+}
+
+.carte-corps h3 {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.carte-agence {
+    margin: 2px 0 0;
+    color: var(--texte-doux);
+    font-size: 14px;
+}
+
+.carte-pied {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.prix {
+    font-family: var(--titre);
+    font-size: 25px;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.02em;
+}
+
+.prix small {
+    color: var(--texte-doux);
+    font-family: var(--corps);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+/* ---------- Catalogue ---------- */
+
+.bandeau {
+    padding-block: 44px 98px;
+    background:
+        radial-gradient(50% 120% at 88% 0%, rgba(255, 90, 31, .24), transparent 70%),
+        var(--encre);
+    color: #fff;
+}
+
+.bandeau h1 {
+    margin: 0 0 8px;
+    font-size: clamp(34px, 4.6vw, 58px);
+    font-weight: 750;
+}
+
+.bandeau p {
+    margin: 0;
+    color: #c4c9d6;
+    font-size: 17px;
+}
+
+.resultats {
+    margin: 0 0 18px;
+    color: var(--texte-doux);
+}
+
+.etat-vide {
+    padding: 56px 24px;
+    background: var(--surface);
+    border: 1px dashed #cfcabd;
+    border-radius: 18px;
+    text-align: center;
+}
+
+.etat-vide h2 {
+    margin-bottom: 8px;
+}
+
+.etat-vide p {
+    margin: 0 0 18px;
+    color: var(--texte-doux);
+}
+
+/* ---------- Vehicle page and booking layout ---------- */
+
+.fiche-vehicule {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr);
+    align-items: start;
+    gap: 26px;
+}
+
+.studio {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(80% 90% at 50% 20%, #fff, #e6e3da);
+    border: 1px solid var(--bordure);
+    border-radius: 20px;
+}
+
+.studio .scene3d {
+    height: clamp(300px, 36vw, 460px);
+}
+
+.studio .scene3d-indice {
+    color: var(--texte-doux);
+}
+
+.panneau {
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 18px;
+    box-shadow: var(--ombre);
+}
+
+.panneau-collant {
+    position: sticky;
+    top: 92px;
+}
+
+.panneau h2 {
+    margin-bottom: 14px;
+}
+
+.ligne-dates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.recap {
+    display: grid;
+    gap: 8px;
+    margin: 14px 0;
+    padding: 14px 0;
+    border-block: 1px solid var(--bordure);
+}
+
+.recap div {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.recap dt {
+    color: var(--texte-doux);
+}
+
+.recap dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+}
+
+.recap .recap-total {
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px solid var(--bordure);
+    font-size: 18px;
+}
+
+.recap .recap-total dd {
+    font-family: var(--titre);
+    font-size: 24px;
+    font-weight: 750;
+}
+
+.specs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin: 20px 0 0;
+}
+
+.specs div {
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 12px;
+}
+
+.specs dt {
+    color: var(--texte-doux);
+    font-size: 13px;
+}
+
+.specs dd {
+    margin: 2px 0 0;
+    font-weight: 600;
+}
+
+/* ---------- Booking steps ---------- */
+
+.etapes-reservation {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 26px;
+    padding: 0;
+    overflow-x: auto;
+    list-style: none;
+}
+
+.etapes-reservation li {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+    padding-top: 10px;
+    border-top: 3px solid var(--bordure);
+    color: var(--texte-doux);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.etapes-reservation .faite {
+    border-top-color: var(--encre);
+    color: var(--texte);
+}
+
+.etapes-reservation .courante {
+    border-top-color: var(--accent);
+    color: var(--texte);
+    font-weight: 700;
+}
+
+/* ---------- Payment ---------- */
+
+.carte-bancaire {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 22px;
+    aspect-ratio: 1.586;
+    max-width: 380px;
+    margin: 0 0 22px;
+    padding: 22px;
+    background:
+        radial-gradient(90% 120% at 90% 0%, rgba(255, 90, 31, .75), transparent 60%),
+        var(--encre);
+    border-radius: 16px;
+    box-shadow: 0 26px 40px -22px rgba(12, 15, 23, .75);
+    color: #fff;
+}
+
+.carte-puce {
+    width: 42px;
+    height: 30px;
+    background: linear-gradient(135deg, #f4d58d, #b78f3f);
+    border-radius: 6px;
+}
+
+.carte-numero {
+    font-size: clamp(17px, 2.6vw, 21px);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .06em;
+}
+
+.carte-bas {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.mention-test {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.separateur {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--texte-doux);
+    font-size: 14px;
+}
+
+.separateur::before,
+.separateur::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--bordure);
+}
+
+/* ---------- Confirmation ---------- */
+
+.confirmation {
+    max-width: 680px;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.coche {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 18px;
+}
+
+.coche circle {
+    fill: var(--accent);
+    transform-origin: center;
+    animation: coche-apparait .5s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+
+.coche path {
+    fill: none;
+    stroke: var(--encre);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 60;
+    animation: coche-trace .5s .3s ease-out both;
+}
+
+@keyframes coche-apparait {
+    from {
+        transform: scale(.3);
+        opacity: 0;
+    }
+}
+
+@keyframes coche-trace {
+    from {
+        stroke-dashoffset: 60;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.confirmation .panneau {
+    margin-top: 22px;
+    text-align: left;
+}
+
+.confirmation .boutons-page {
+    justify-content: center;
+    margin-top: 22px;
+}
+
+/* ---------- Client area ---------- */
+
+.espace-tete {
+    padding-block: 36px 34px;
+    background: var(--encre);
+    color: #fff;
+}
+
+.espace-tete h1 {
+    margin: 0 0 4px;
+    font-size: clamp(28px, 3.6vw, 42px);
+}
+
+.espace-tete p {
+    margin: 0;
+    color: #c4c9d6;
+}
+
+.espace-onglets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 18px;
+}
+
+.espace-onglets a {
+    padding: 7px 14px;
+    border-radius: 999px;
+    color: #c9cedb;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.espace-onglets a:hover {
+    background: rgba(255, 255, 255, .1);
+    color: #fff;
+}
+
+.espace-onglets a.actif {
+    background: var(--accent);
+    color: var(--encre);
+    font-weight: 650;
+}
+
+.espace-page {
+    padding-block: 32px 64px;
+}
+
+.prochaine {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 22px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 18px;
+    box-shadow: var(--ombre);
+}
+
+.prochaine-visuel {
+    display: grid;
+    height: 120px;
+    place-items: center;
+    background: linear-gradient(160deg, #1b2130, var(--encre));
+    border-radius: 12px;
+}
+
+.prochaine-visuel .illustration {
+    width: 82%;
+}
+
+.prochaine h2 {
+    margin: 6px 0 2px;
+    font-size: 23px;
+}
+
+.prochaine p {
+    margin: 0;
+    color: var(--texte-doux);
+}
+
+.liste-reservations {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ligne-reservation {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 12px;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .15s ease, transform .15s ease;
+}
+
+.ligne-reservation:hover {
+    border-color: var(--accent);
+    transform: translateX(3px);
+}
+
+.ligne-reservation strong {
+    display: block;
+}
+
+.ligne-reservation span.doux {
+    color: var(--texte-doux);
+    font-size: 14px;
+}
+
+/* ---------- Sign-in screens ---------- */
+
+.ecran-compte {
+    display: grid;
+    place-items: center;
+    flex: 1 0 auto;
+    padding: 44px 16px 64px;
+    background:
+        radial-gradient(50% 60% at 80% 10%, rgba(255, 90, 31, .24), transparent 70%),
+        radial-gradient(50% 60% at 10% 90%, rgba(62, 90, 170, .24), transparent 70%),
+        var(--encre);
+}
+
+.carte-compte {
+    width: 100%;
+    max-width: 440px;
+    padding: 30px;
+    background: var(--surface);
+    border-radius: 18px;
+    box-shadow: 0 40px 70px -30px rgba(0, 0, 0, .7);
+}
+
+.carte-compte-large {
+    max-width: 620px;
+}
+
+.carte-compte h1 {
+    margin-bottom: 6px;
+}
+
+.carte-compte .introduction {
+    margin: 0 0 20px;
+    color: var(--texte-doux);
+}
+
+.ligne-deux {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 14px;
+}
+
+.bas-carte {
+    margin: 18px 0 0;
+    color: var(--texte-doux);
+    text-align: center;
+}
+
+/* ---------- Footer ---------- */
+
+.site-pied {
+    padding-block: 34px;
+    background: var(--encre);
+    color: #aeb4c2;
+    font-size: 14px;
+}
+
+.site-pied-contenu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.site-pied a {
+    color: #dfe3ec;
+}
+
+.site-pied .marque {
+    color: #fff;
+}
+
+.bande-action {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+    padding: 44px;
+    background:
+        radial-gradient(60% 140% at 90% 50%, rgba(255, 90, 31, .4), transparent 70%),
+        var(--encre);
+    border-radius: 24px;
+    color: #fff;
+}
+
+.bande-action h2 {
+    font-size: clamp(26px, 3.4vw, 42px);
+}
+
+.bande-action p {
+    margin: 8px 0 0;
+    color: #c4c9d6;
+}
+
+/* ---------- Scroll reveal, switched on by site.js ---------- */
+
+.a-reveler {
+    opacity: 0;
+    translate: 0 22px;
+    transition: opacity .6s ease var(--retard, 0ms), translate .6s cubic-bezier(.2, .8, .2, 1) var(--retard, 0ms);
+}
+
+.a-reveler.revele {
+    opacity: 1;
+    translate: 0 0;
+}
+
+/* The reveal must not cancel the tilt and shadow transitions of the card. */
+.carte-vehicule.a-reveler {
+    transition: opacity .6s ease var(--retard, 0ms), translate .6s cubic-bezier(.2, .8, .2, 1) var(--retard, 0ms),
+    transform .2s ease-out, box-shadow .2s ease, border-color .2s ease;
+}
+
+.heros-entree > * {
+    animation: heros-monte .8s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.heros-entree > :nth-child(2) {
+    animation-delay: .08s;
+}
+
+.heros-entree > :nth-child(3) {
+    animation-delay: .16s;
+}
+
+.heros-entree > :nth-child(4) {
+    animation-delay: .24s;
+}
+
+@keyframes heros-monte {
+    from {
+        opacity: 0;
+        transform: translateY(26px);
+    }
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 980px) {
+    .heros-grille {
+        grid-template-columns: minmax(0, 1fr);
+        padding-block: 36px 120px;
+    }
+
+    .panneau-recherche {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .panneau-recherche .bouton {
+        grid-column: 1 / -1;
+    }
+
+    .fiche-vehicule {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .panneau-collant {
+        position: static;
+    }
+
+    .prochaine {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 720px) {
+    .conteneur {
+        width: calc(100% - 32px);
+    }
+
+    .site-entete-contenu {
+        flex-wrap: wrap;
+        gap: 10px;
+        min-height: 62px;
+        padding-block: 10px;
+    }
+
+    .menu-bouton {
+        display: inline-flex;
+        margin-left: auto;
+    }
+
+    .site-nav {
+        display: none;
+        flex-basis: 100%;
+        flex-direction: column;
+        order: 3;
+        margin: 0;
+    }
+
+    .site-actions {
+        display: none;
+        flex-basis: 100%;
+        flex-wrap: wrap;
+        order: 4;
+    }
+
+    .menu-ouvert .site-nav,
+    .menu-ouvert .site-actions {
+        display: flex;
+    }
+
+    .profil-menu {
+        position: static;
+        margin-top: 8px;
+    }
+
+    .panneau-recherche {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .section {
+        padding-block: 52px;
+    }
+
+    .ligne-deux {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ligne-reservation {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .bande-action {
+        padding: 28px 22px;
+    }
+
+    .parking-plan {
+        transform: rotateX(30deg);
+        padding: 8px;
+    }
+
+    .scene3d-indice {
+        display: none;
+    }
+}

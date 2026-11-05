@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Employés - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1>Employés</h1>
+        <a class="bouton bouton-principal" th:if="${estManager}" th:href="@{/employes/nouveau}">Nouvel employé</a>
+    </div>
+    <form th:replace="~{fragments/commun :: recherche('Nom ou agence')}"></form>
+    <div class="tableau-conteneur">
+        <table class="tableau">
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Rôle</th>
+                <th>Agence</th>
+                <th class="actions">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="objet : ${objets}">
+                <td><a th:if="${objet != null}" th:href="@{/employes/{id}(id=${objet.idEmploye})}" th:text="${objet.nomComplet}"></a><span th:if="${objet == null}">—</span></td>
+                <td><span th:text="${objet.role?.libelle} ?: '—'"></span></td>
+                <td><a th:if="${objet.agence != null}" th:href="@{/agences/{id}(id=${objet.agence.idAgence})}" th:text="${objet.agence.nom}"></a><span th:if="${objet.agence == null}">—</span></td>
+                <td class="actions">
+                    <th:block th:replace="~{fragments/commun :: actions(${objet.idEmploye})}"></th:block>
+                </td>
+            </tr>
+            <tr th:if="${objets.isEmpty()}">
+                <td class="vide" colspan="4" th:text="${#strings.isEmpty(q)} ? 'Aucun élément pour le moment.' : 'Aucun résultat pour cette recherche.'"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragments/commun :: pagination}"></nav>
+</main>
+</body>
+</html>

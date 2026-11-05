@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Contrats - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1>Contrats</h1>
+        <a class="bouton bouton-principal" th:href="@{/contrats/nouveau}">Nouveau contrat</a>
+    </div>
+    <form th:replace="~{fragments/commun :: recherche('Client ou immatriculation')}"></form>
+    <div class="tableau-conteneur">
+        <table class="tableau">
+            <thead>
+            <tr>
+                <th>N°</th>
+                <th>Client</th>
+                <th>Véhicule</th>
+                <th>Signature</th>
+                <th class="nombre">Montant total</th>
+                <th>Valide</th>
+                <th class="actions">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="objet : ${objets}">
+                <td><a th:if="${objet != null}" th:href="@{/contrats/{id}(id=${objet.idContrat})}" th:text="${objet.idContrat}"></a><span th:if="${objet == null}">—</span></td>
+                <td><a th:if="${objet.reservation?.client != null}" th:href="@{/clients/{id}(id=${objet.reservation?.client.idClient})}" th:text="${objet.reservation?.client.nomComplet}"></a><span th:if="${objet.reservation?.client == null}">—</span></td>
+                <td><a th:if="${objet.reservation?.vehicule != null}" th:href="@{/vehicules/{id}(id=${objet.reservation?.vehicule.idVehicule})}" th:text="${objet.reservation?.vehicule.libelle}"></a><span th:if="${objet.reservation?.vehicule == null}">—</span></td>
+                <td><span th:text="${objet.dateSignature != null} ? ${#temporals.format(objet.dateSignature, 'dd/MM/yyyy')} : '—'"></span></td>
+                <td class="nombre"><span th:text="${#numbers.formatDecimal(objet.montantTotal, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></td>
+                <td><span th:text="${objet.valide} ? 'Oui' : 'Non'"></span></td>
+                <td class="actions">
+                    <th:block th:replace="~{fragments/commun :: actions(${objet.idContrat})}"></th:block>
+                </td>
+            </tr>
+            <tr th:if="${objets.isEmpty()}">
+                <td class="vide" colspan="7" th:text="${#strings.isEmpty(q)} ? 'Aucun élément pour le moment.' : 'Aucun résultat pour cette recherche.'"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragments/commun :: pagination}"></nav>
+</main>
+</body>
+</html>

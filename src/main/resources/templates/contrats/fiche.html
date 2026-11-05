@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Contrat - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1 th:text="${objet.libelle}">Contrat</h1>
+        <div class="boutons-page">
+            <a class="bouton" th:href="@{/contrats/{id}/imprimer(id=${objet.idContrat})}">Imprimer</a>
+            <a class="bouton" th:href="@{/contrats/{id}/modifier(id=${objet.idContrat})}">Modifier</a>
+            <a class="bouton" th:href="@{/contrats}">Retour à la liste</a>
+        </div>
+    </div>
+    <dl class="fiche">
+        <div>
+            <dt>Réservation</dt>
+            <dd><a th:if="${objet.reservation != null}" th:href="@{/reservations/{id}(id=${objet.reservation.idReservation})}" th:text="${objet.reservation.libelle}"></a><span th:if="${objet.reservation == null}">—</span></dd>
+        </div>
+        <div>
+            <dt>Véhicule</dt>
+            <dd><a th:if="${objet.reservation?.vehicule != null}" th:href="@{/vehicules/{id}(id=${objet.reservation?.vehicule.idVehicule})}" th:text="${objet.reservation?.vehicule.libelle}"></a><span th:if="${objet.reservation?.vehicule == null}">—</span></dd>
+        </div>
+        <div>
+            <dt>Signé par</dt>
+            <dd><a th:if="${objet.employe != null}" th:href="@{/employes/{id}(id=${objet.employe.idEmploye})}" th:text="${objet.employe.nomComplet}"></a><span th:if="${objet.employe == null}">—</span></dd>
+        </div>
+        <div>
+            <dt>Signature</dt>
+            <dd><span th:text="${objet.dateSignature != null} ? ${#temporals.format(objet.dateSignature, 'dd/MM/yyyy')} : '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Valide</dt>
+            <dd><span th:text="${objet.valide} ? 'Oui' : 'Non'"></span></dd>
+        </div>
+        <div>
+            <dt>Montant total</dt>
+            <dd><span th:text="${#numbers.formatDecimal(objet.montantTotal, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></dd>
+        </div>
+        <div>
+            <dt>Déjà payé</dt>
+            <dd><span th:text="${#numbers.formatDecimal(paye, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></dd>
+        </div>
+        <div>
+            <dt>Reste à payer</dt>
+            <dd><span th:text="${#numbers.formatDecimal(reste, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></dd>
+        </div>
+    </dl>
+    <section class="bloc">
+        <div class="titre-bloc">
+            <h2>Paiements</h2>
+            <a class="bouton" th:href="@{/paiements/nouveau(contrat=${objet.idContrat})}">Nouveau paiement</a>
+        </div>
+        <div class="tableau-conteneur">
+            <table class="tableau">
+                <thead>
+                <tr>
+                    <th>N°</th>
+                    <th>Date</th>
+                    <th>Mode</th>
+                    <th class="nombre">Montant</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ligne : ${paiements}">
+                    <td><a th:if="${ligne != null}" th:href="@{/paiements/{id}(id=${ligne.idPaiement})}" th:text="${ligne.idPaiement}"></a><span th:if="${ligne == null}">—</span></td>
+                    <td><span th:text="${ligne.datePaiement != null} ? ${#temporals.format(ligne.datePaiement, 'dd/MM/yyyy')} : '—'"></span></td>
+                    <td><span th:text="${ligne.modePaiement?.libelle} ?: '—'"></span></td>
+                    <td class="nombre"><span th:text="${#numbers.formatDecimal(ligne.montant, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(paiements)}">
+                    <td class="vide" colspan="4">Aucun paiement pour ce contrat.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

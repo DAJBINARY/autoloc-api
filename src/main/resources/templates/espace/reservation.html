@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/site :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Ma réservation - AutoLoc</title>
+</head>
+<body>
+<main>
+    <section th:replace="~{fragments/site :: espace-tete('reservations', |Réservation n°${reservation.idReservation}|, ${reservation.statut.libelle})}"></section>
+    <div class="conteneur espace-page">
+        <p class="alerte alerte-succes" role="status" th:if="${succes}" th:text="${succes}"></p>
+        <p class="alerte alerte-erreur" role="alert" th:if="${erreur}" th:text="${erreur}"></p>
+        <div class="fiche-vehicule">
+            <div class="panneau">
+                <h2 th:text="${reservation.vehicule != null} ? ${reservation.vehicule.marque} + ' ' + ${reservation.vehicule.modele} : 'Véhicule à confirmer'"></h2>
+                <dl class="recap" style="margin-bottom: 0">
+                    <div><dt>Statut</dt><dd><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(reservation.statut)}" th:text="${reservation.statut.libelle}"></span></dd></div>
+                    <div><dt>Agence</dt><dd th:text="${reservation.vehicule?.agence?.nom} ?: 'À confirmer'"></dd></div>
+                    <div><dt>Départ</dt><dd th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></dd></div>
+                    <div><dt>Retour</dt><dd th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></dd></div>
+                    <div><dt>Durée</dt><dd th:text="|${jours} jour${jours > 1 ? 's' : ''}|"></dd></div>
+                    <div><dt>Déjà payé</dt><dd th:text="${#numbers.formatDecimal(paye, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></dd></div>
+                    <div class="recap-total"><dt>Total</dt><dd th:text="${#numbers.formatDecimal(montant, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></dd></div>
+                </dl>
+            </div>
+            <aside class="panneau">
+                <h2>Actions</h2>
+                <div style="display: grid; gap: 8px">
+                    <a class="bouton bouton-principal bouton-large" th:if="${reservation.statut.name() == 'EN_ATTENTE' and contrat == null}"
+                       th:href="@{/espace/reservations/{id}/paiement(id=${reservation.idReservation})}">Payer en ligne</a>
+                    <a class="bouton bouton-large" th:if="${reservation.vehicule?.agence != null and reservation.statut.name() != 'ANNULEE'}"
+                       th:href="@{/espace/reservations/{id}/parking(id=${reservation.idReservation})}">Voir ma place de parking</a>
+                    <a class="bouton bouton-large" th:if="${contrat != null}" th:href="@{/espace/reservations/{id}/contrat(id=${reservation.idReservation})}">Voir mon contrat</a>
+                    <form th:if="${(reservation.statut.name() == 'EN_ATTENTE' or reservation.statut.name() == 'CONFIRMEE') and reservation.dateDepart == null}"
+                          th:action="@{/espace/reservations/{id}/annuler(id=${reservation.idReservation})}" method="post"
+                          onsubmit="return confirm('Annuler cette réservation ?');">
+                        <button class="bouton bouton-danger bouton-large" type="submit">Annuler la réservation</button>
+                    </form>
+                </div>
+                <p class="aide" th:if="${contrat != null and reservation.statut.name() == 'ANNULEE'}">Votre agence reviendra vers vous pour le remboursement.</p>
+            </aside>
+        </div>
+    </div>
+</main>
+</body>
+</html>

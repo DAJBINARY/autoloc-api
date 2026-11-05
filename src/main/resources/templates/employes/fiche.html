@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Employé - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1 th:text="${objet.nomComplet}">Employé</h1>
+        <div class="boutons-page">
+            <a class="bouton" th:if="${estManager}" th:href="@{/employes/{id}/modifier(id=${objet.idEmploye})}">Modifier</a>
+            <a class="bouton" th:href="@{/employes}">Retour à la liste</a>
+        </div>
+    </div>
+    <dl class="fiche">
+        <div>
+            <dt>Rôle</dt>
+            <dd><span th:text="${objet.role?.libelle} ?: '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Agence</dt>
+            <dd><a th:if="${objet.agence != null}" th:href="@{/agences/{id}(id=${objet.agence.idAgence})}" th:text="${objet.agence.nom}"></a><span th:if="${objet.agence == null}">—</span></dd>
+        </div>
+        <div>
+            <dt>Compte de connexion</dt>
+            <dd th:text="${objet.identifiant} ?: 'Aucun'"></dd>
+        </div>
+    </dl>
+    <section class="bloc">
+        <div class="titre-bloc">
+            <h2>Contrats signés</h2>
+        </div>
+        <div class="tableau-conteneur">
+            <table class="tableau">
+                <thead>
+                <tr>
+                    <th>Contrat</th>
+                    <th>Signature</th>
+                    <th class="nombre">Montant total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ligne : ${contrats}">
+                    <td><a th:if="${ligne != null}" th:href="@{/contrats/{id}(id=${ligne.idContrat})}" th:text="${ligne.libelle}"></a><span th:if="${ligne == null}">—</span></td>
+                    <td><span th:text="${ligne.dateSignature != null} ? ${#temporals.format(ligne.dateSignature, 'dd/MM/yyyy')} : '—'"></span></td>
+                    <td class="nombre"><span th:text="${#numbers.formatDecimal(ligne.montantTotal, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(contrats)}">
+                    <td class="vide" colspan="3">Aucun contrat signé par cet employé.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

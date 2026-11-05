@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Mon compte - AutoLoc</title>
+</head>
+<body>
+<main>
+    <h1>Mon compte</h1>
+    <p th:text="|Connecté en tant que ${utilisateur}|"></p>
+    <form class="formulaire" th:action="@{/mon-compte}" method="post">
+        <h2>Changer de mot de passe</h2>
+        <div class="champ">
+            <label for="actuel">Mot de passe actuel</label>
+            <input type="password" id="actuel" name="actuel" autocomplete="current-password" required>
+        </div>
+        <div class="champ">
+            <label for="nouveau">Nouveau mot de passe (8 caractères minimum)</label>
+            <input type="password" id="nouveau" name="nouveau" minlength="8" maxlength="72" autocomplete="new-password" required>
+        </div>
+        <div class="champ">
+            <label for="confirmation">Confirmer le nouveau mot de passe</label>
+            <input type="password" id="confirmation" name="confirmation" minlength="8" maxlength="72" autocomplete="new-password" required>
+        </div>
+        <div class="boutons">
+            <button class="bouton bouton-principal" type="submit">Enregistrer</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

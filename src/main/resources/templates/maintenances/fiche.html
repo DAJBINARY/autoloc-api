@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Maintenance - AutoLoc</title>
+</head>
+<body>
+<main>
+    <div class="titre-page">
+        <h1 th:text="${'Maintenance n°' + objet.idMaintenance}">Maintenance</h1>
+        <div class="boutons-page">
+            <form th:if="${objet.dateFin == null}" class="en-ligne" th:action="@{/maintenances/{id}/cloturer(id=${objet.idMaintenance})}" method="post"><button class="bouton bouton-principal" type="submit">Clôturer</button></form>
+            <a class="bouton" th:href="@{/maintenances/{id}/modifier(id=${objet.idMaintenance})}">Modifier</a>
+            <a class="bouton" th:href="@{/maintenances}">Retour à la liste</a>
+        </div>
+    </div>
+    <dl class="fiche">
+        <div>
+            <dt>Véhicule</dt>
+            <dd><a th:if="${objet.vehicule != null}" th:href="@{/vehicules/{id}(id=${objet.vehicule.idVehicule})}" th:text="${objet.vehicule.libelle}"></a><span th:if="${objet.vehicule == null}">—</span></dd>
+        </div>
+        <div>
+            <dt>Date de début</dt>
+            <dd><span th:text="${objet.dateDebut != null} ? ${#temporals.format(objet.dateDebut, 'dd/MM/yyyy')} : '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Date de fin</dt>
+            <dd><span th:text="${objet.dateFin != null} ? ${#temporals.format(objet.dateFin, 'dd/MM/yyyy')} : '—'"></span></dd>
+        </div>
+        <div>
+            <dt>Description</dt>
+            <dd><span th:text="${objet.description} ?: '—'"></span></dd>
+        </div>
+    </dl>
+</main>
+</body>
+</html>
