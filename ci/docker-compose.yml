@@ -23,6 +23,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - ci
+    # Public resolvers: some networks (phone hotspots with DNS64) only return IPv6 addresses
+    # for github.com, which containers cannot reach
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     depends_on:
       sonarqube:
         condition: service_healthy
@@ -39,6 +44,9 @@ services:
       SONAR_JDBC_PASSWORD: ${SONAR_DB_PASSWORD}
       # Docker Desktop does not let Elasticsearch raise vm.max_map_count
       SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+      # The quality gate webhook targets the "jenkins" container, a private address that
+      # SonarQube refuses by default
+      SONAR_VALIDATEWEBHOOKS: "false"
     volumes:
       - sonarqube-data:/opt/sonarqube/data
       - sonarqube-extensions:/opt/sonarqube/extensions
