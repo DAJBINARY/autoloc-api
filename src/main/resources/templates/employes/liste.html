@@ -7,7 +7,7 @@
 <main>
     <div class="titre-page">
         <h1>Employés</h1>
-        <a class="bouton bouton-principal" th:if="${estManager}" th:href="@{/employes/nouveau}">Nouvel employé</a>
+        <a class="bouton bouton-principal bouton-ajout" th:if="${estManager}" th:href="@{/employes/nouveau}">Nouvel employé</a>
     </div>
     <form th:replace="~{fragments/commun :: recherche('Nom ou agence')}"></form>
     <div class="tableau-conteneur">
@@ -22,7 +22,7 @@
             </thead>
             <tbody>
             <tr th:each="objet : ${objets}">
-                <td><a th:if="${objet != null}" th:href="@{/employes/{id}(id=${objet.idEmploye})}" th:text="${objet.nomComplet}"></a><span th:if="${objet == null}">—</span></td>
+                <td><span class="avec-avatar"><span class="avatar" aria-hidden="true" th:text="${#strings.substring(objet.nomComplet, 0, 1)}"></span><a th:href="@{/employes/{id}(id=${objet.idEmploye})}" th:text="${objet.nomComplet}"></a></span></td>
                 <td><span th:text="${objet.role?.libelle} ?: '—'"></span></td>
                 <td><a th:if="${objet.agence != null}" th:href="@{/agences/{id}(id=${objet.agence.idAgence})}" th:text="${objet.agence.nom}"></a><span th:if="${objet.agence == null}">—</span></td>
                 <td class="actions">

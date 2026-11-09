@@ -5,14 +5,22 @@
 </head>
 <body>
 <main>
-    <div class="titre-page">
-        <h1 th:text="${'Paiement n°' + objet.idPaiement}">Paiement</h1>
+    <div class="titre-page titre-fiche">
+        <div>
+            <a th:replace="~{fragments/commun :: retour}"></a>
+            <div class="titre-ligne">
+                <h1 th:text="${'Paiement n°' + objet.idPaiement}">Paiement</h1>
+            </div>
+        </div>
         <div class="boutons-page">
-            <a class="bouton" th:href="@{/paiements/{id}/modifier(id=${objet.idPaiement})}">Modifier</a>
-            <a class="bouton" th:href="@{/paiements}">Retour à la liste</a>
+            <a class="bouton" th:href="@{/paiements/{id}/modifier(id=${objet.idPaiement})}"><svg th:replace="~{fragments/commun :: icone-modifier}"></svg>Modifier</a>
         </div>
     </div>
     <dl class="fiche">
+        <div>
+            <dt>Montant</dt>
+            <dd class="valeur-forte"><span th:text="${#numbers.formatDecimal(objet.montant, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></dd>
+        </div>
         <div>
             <dt>Contrat</dt>
             <dd><a th:if="${objet.contrat != null}" th:href="@{/contrats/{id}(id=${objet.contrat.idContrat})}" th:text="${objet.contrat.libelle}"></a><span th:if="${objet.contrat == null}">—</span></dd>
@@ -24,10 +32,6 @@
         <div>
             <dt>Mode</dt>
             <dd><span th:text="${objet.modePaiement?.libelle} ?: '—'"></span></dd>
-        </div>
-        <div>
-            <dt>Montant</dt>
-            <dd><span th:text="${#numbers.formatDecimal(objet.montant, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></dd>
         </div>
     </dl>
 </main>

@@ -7,7 +7,7 @@
 <main>
     <div class="titre-page">
         <h1>Maintenances</h1>
-        <a class="bouton bouton-principal" th:href="@{/maintenances/nouveau}">Nouvelle maintenance</a>
+        <a class="bouton bouton-principal bouton-ajout" th:href="@{/maintenances/nouveau}">Nouvelle maintenance</a>
     </div>
     <form th:replace="~{fragments/commun :: recherche('Description ou véhicule')}"></form>
     <div class="tableau-conteneur">

@@ -5,42 +5,61 @@
 </head>
 <body>
 <main>
-    <h1 th:text="${modification} ? 'Modifier le client' : 'Nouveau client'">Nouveau client</h1>
-    <form class="formulaire" th:action="@{${action}}" th:object="${objet}" method="post">
+    <div class="titre-formulaire">
+        <a th:replace="~{fragments/commun :: retour}"></a>
+        <h1 th:text="${modification} ? 'Modifier le client' : 'Nouveau client'">Nouveau client</h1>
+    </div>
+    <form class="formulaire formulaire-rubriques" th:action="@{${action}}" th:object="${objet}" method="post">
         <p class="alerte alerte-erreur" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#fields.globalErrors()[0]}"></p>
-            <div class="champ">
-                <label th:for="nom">Nom</label>
-                <input type="text" th:field="*{nom}" th:errorclass="invalide" required>
-                <p class="erreur-champ" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></p>
+        <section class="rubrique">
+            <div class="rubrique-tete">
+                <h2>Identité</h2>
+                <p>Le conducteur et son permis.</p>
             </div>
-            <div class="champ">
-                <label th:for="prenom">Prénom</label>
-                <input type="text" th:field="*{prenom}" th:errorclass="invalide" required>
-                <p class="erreur-champ" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></p>
+            <div class="grille-champs">
+                <div class="champ">
+                    <label th:for="prenom">Prénom</label>
+                    <input type="text" th:field="*{prenom}" th:errorclass="invalide" required>
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="nom">Nom</label>
+                    <input type="text" th:field="*{nom}" th:errorclass="invalide" required>
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="numPermis">N° de permis</label>
+                    <input type="text" th:field="*{numPermis}" th:errorclass="invalide" required>
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('numPermis')}" th:errors="*{numPermis}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="dateInscription">Date d'inscription</label>
+                    <input type="date" th:field="*{dateInscription}" th:errorclass="invalide" required>
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('dateInscription')}" th:errors="*{dateInscription}"></p>
+                </div>
             </div>
-            <div class="champ">
-                <label th:for="email">E-mail</label>
-                <input type="email" th:field="*{email}" th:errorclass="invalide" required>
-                <p class="erreur-champ" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+        </section>
+        <section class="rubrique">
+            <div class="rubrique-tete">
+                <h2>Coordonnées</h2>
+                <p>Pour joindre le client.</p>
             </div>
-            <div class="champ">
-                <label th:for="telephone">Téléphone</label>
-                <input type="tel" th:field="*{telephone}" th:errorclass="invalide" required>
-                <p class="erreur-champ" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></p>
+            <div class="grille-champs">
+                <div class="champ">
+                    <label th:for="email">E-mail</label>
+                    <input type="email" th:field="*{email}" th:errorclass="invalide" required>
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                </div>
+                <div class="champ">
+                    <label th:for="telephone">Téléphone</label>
+                    <input type="tel" th:field="*{telephone}" th:errorclass="invalide" required>
+                    <p class="erreur-champ" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></p>
+                </div>
             </div>
-            <div class="champ">
-                <label th:for="numPermis">N° de permis</label>
-                <input type="text" th:field="*{numPermis}" th:errorclass="invalide" required>
-                <p class="erreur-champ" th:if="${#fields.hasErrors('numPermis')}" th:errors="*{numPermis}"></p>
-            </div>
-            <div class="champ">
-                <label th:for="dateInscription">Date d'inscription</label>
-                <input type="date" th:field="*{dateInscription}" th:errorclass="invalide" required>
-                <p class="erreur-champ" th:if="${#fields.hasErrors('dateInscription')}" th:errors="*{dateInscription}"></p>
-            </div>
+        </section>
         <div class="boutons">
+            <a class="bouton bouton-discret" th:href="@{/clients}">Annuler</a>
             <button class="bouton bouton-principal" type="submit">Enregistrer</button>
-            <a class="bouton" th:href="@{/clients}">Annuler</a>
         </div>
     </form>
 </main>

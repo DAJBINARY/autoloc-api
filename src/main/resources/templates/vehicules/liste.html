@@ -7,7 +7,7 @@
 <main>
     <div class="titre-page">
         <h1>Véhicules</h1>
-        <a class="bouton bouton-principal" th:href="@{/vehicules/nouveau}">Nouveau véhicule</a>
+        <a class="bouton bouton-principal bouton-ajout" th:href="@{/vehicules/nouveau}">Nouveau véhicule</a>
     </div>
     <form th:replace="~{fragments/commun :: recherche('Immatriculation, marque, modèle ou agence')}"></form>
     <div class="tableau-conteneur">
@@ -26,7 +26,7 @@
             </thead>
             <tbody>
             <tr th:each="objet : ${objets}">
-                <td><a th:if="${objet != null}" th:href="@{/vehicules/{id}(id=${objet.idVehicule})}" th:text="${objet.immatriculation}"></a><span th:if="${objet == null}">—</span></td>
+                <td><a class="plaque" th:if="${objet != null}" th:href="@{/vehicules/{id}(id=${objet.idVehicule})}" th:text="${objet.immatriculation}"></a><span th:if="${objet == null}">—</span></td>
                 <td><span th:text="${objet.marque} ?: '—'"></span></td>
                 <td><span th:text="${objet.modele} ?: '—'"></span></td>
                 <td><span th:text="${objet.categorie?.libelle} ?: '—'"></span></td>

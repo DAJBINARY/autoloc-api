@@ -39,6 +39,8 @@ public class AccueilController {
     @GetMapping("/tableau-de-bord")
     String accueil(Model model) {
         model.addAttribute("vehiculesDisponibles", vehicules.compterParStatut(StatutVehicule.DISPONIBLE));
+        model.addAttribute("vehiculesLoues", vehicules.compterParStatut(StatutVehicule.LOUE));
+        model.addAttribute("vehiculesEnMaintenance", vehicules.compterParStatut(StatutVehicule.MAINTENANCE));
         model.addAttribute("vehiculesTotal", vehicules.compter());
         model.addAttribute("locationsEnCours", reservations.compterLocationsEnCours());
         model.addAttribute("reservationsEnAttente", reservations.compterParStatut(StatutReservation.EN_ATTENTE));

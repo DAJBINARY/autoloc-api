@@ -5,11 +5,16 @@
 </head>
 <body>
 <main>
-    <div class="titre-page">
-        <h1 th:text="${objet.nomComplet}">Employé</h1>
+    <div class="titre-page titre-fiche">
+        <div>
+            <a th:replace="~{fragments/commun :: retour}"></a>
+            <div class="titre-ligne">
+                <span class="avatar avatar-grand" aria-hidden="true" th:text="${#strings.substring(objet.nomComplet, 0, 1)}"></span>
+                <h1 th:text="${objet.nomComplet}">Employé</h1>
+            </div>
+        </div>
         <div class="boutons-page">
-            <a class="bouton" th:if="${estManager}" th:href="@{/employes/{id}/modifier(id=${objet.idEmploye})}">Modifier</a>
-            <a class="bouton" th:href="@{/employes}">Retour à la liste</a>
+            <a class="bouton" th:if="${estManager}" th:href="@{/employes/{id}/modifier(id=${objet.idEmploye})}"><svg th:replace="~{fragments/commun :: icone-modifier}"></svg>Modifier</a>
         </div>
     </div>
     <dl class="fiche">
@@ -28,7 +33,7 @@
     </dl>
     <section class="bloc">
         <div class="titre-bloc">
-            <h2>Contrats signés</h2>
+            <h2>Contrats signés<span class="compteur" th:text="${#lists.size(contrats)}"></span></h2>
         </div>
         <div class="tableau-conteneur">
             <table class="tableau">

@@ -5,7 +5,10 @@
 </head>
 <body>
 <main>
-    <h1 th:text="${modification} ? 'Modifier l\'équipement' : 'Nouvel équipement'">Nouvel équipement</h1>
+    <div class="titre-formulaire">
+        <a th:replace="~{fragments/commun :: retour}"></a>
+        <h1 th:text="${modification} ? 'Modifier l\'équipement' : 'Nouvel équipement'">Nouvel équipement</h1>
+    </div>
     <form class="formulaire" th:action="@{${action}}" th:object="${objet}" method="post">
         <p class="alerte alerte-erreur" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#fields.globalErrors()[0]}"></p>
             <div class="champ">
@@ -14,8 +17,8 @@
                 <p class="erreur-champ" th:if="${#fields.hasErrors('libelle')}" th:errors="*{libelle}"></p>
             </div>
         <div class="boutons">
+            <a class="bouton bouton-discret" th:href="@{/equipements}">Annuler</a>
             <button class="bouton bouton-principal" type="submit">Enregistrer</button>
-            <a class="bouton" th:href="@{/equipements}">Annuler</a>
         </div>
     </form>
 </main>

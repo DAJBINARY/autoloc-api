@@ -5,17 +5,38 @@
 </head>
 <body>
 <main>
-    <div class="titre-page">
-        <h1 th:text="${'Réservation n°' + objet.idReservation}">Réservation</h1>
+    <div class="titre-page titre-fiche">
+        <div>
+            <a th:replace="~{fragments/commun :: retour}"></a>
+            <div class="titre-ligne">
+                <h1 th:text="${'Réservation n°' + objet.idReservation}">Réservation</h1>
+                <span class="badge" th:classappend="${'badge-' + #strings.toLowerCase(objet.statut)}" th:text="${objet.statut.libelle}"></span>
+            </div>
+        </div>
         <div class="boutons-page">
+            <a class="bouton" th:href="@{/reservations/{id}/modifier(id=${objet.idReservation})}"><svg th:replace="~{fragments/commun :: icone-modifier}"></svg>Modifier</a>
+            <form th:if="${(objet.statut.name() == 'EN_ATTENTE' or objet.statut.name() == 'CONFIRMEE') and objet.dateDepart == null}" class="en-ligne" th:action="@{/reservations/{id}/annuler(id=${objet.idReservation})}" method="post" onsubmit="return confirm('Annuler cette réservation ?');"><button class="bouton bouton-danger" type="submit">Annuler la réservation</button></form>
             <form th:if="${objet.statut.name() == 'EN_ATTENTE'}" class="en-ligne" th:action="@{/reservations/{id}/confirmer(id=${objet.idReservation})}" method="post"><button class="bouton bouton-principal" type="submit">Confirmer</button></form>
             <form th:if="${objet.statut.name() == 'CONFIRMEE' and objet.dateDepart == null}" class="en-ligne" th:action="@{/reservations/{id}/depart(id=${objet.idReservation})}" method="post"><button class="bouton bouton-principal" type="submit">Enregistrer le départ</button></form>
             <form th:if="${objet.enCours}" class="en-ligne" th:action="@{/reservations/{id}/retour(id=${objet.idReservation})}" method="post"><button class="bouton bouton-principal" type="submit">Enregistrer le retour</button></form>
-            <form th:if="${(objet.statut.name() == 'EN_ATTENTE' or objet.statut.name() == 'CONFIRMEE') and objet.dateDepart == null}" class="en-ligne" th:action="@{/reservations/{id}/annuler(id=${objet.idReservation})}" method="post" onsubmit="return confirm('Annuler cette réservation ?');"><button class="bouton bouton-danger" type="submit">Annuler la réservation</button></form>
-            <a class="bouton" th:href="@{/reservations/{id}/modifier(id=${objet.idReservation})}">Modifier</a>
-            <a class="bouton" th:href="@{/reservations}">Retour à la liste</a>
         </div>
     </div>
+    <ol class="parcours" th:unless="${objet.statut.name() == 'ANNULEE'}" aria-label="Avancement de la réservation"
+        th:with="termine=${objet.statut.name() == 'TERMINEE'},
+                 parti=${termine or objet.dateDepart != null},
+                 rentre=${termine or objet.dateRetour != null},
+                 confirme=${parti or objet.statut.name() == 'CONFIRMEE'}">
+        <li class="fait"><strong>Réservée</strong></li>
+        <li th:class="${confirme} ? 'fait' : 'courant'" th:attr="aria-current=${confirme ? null : 'step'}"><strong>Confirmée</strong></li>
+        <li th:class="${parti} ? 'fait' : (${confirme} ? 'courant' : '')" th:attr="aria-current=${confirme and !parti ? 'step' : null}">
+            <strong>Départ</strong>
+            <small th:text="${objet.dateDepart != null ? #temporals.format(objet.dateDepart, 'dd/MM/yyyy') : (objet.dateDebut != null ? 'Prévu le ' + #temporals.format(objet.dateDebut, 'dd/MM/yyyy') : '')}"></small>
+        </li>
+        <li th:class="${rentre} ? 'fait' : (${parti} ? 'courant' : '')" th:attr="aria-current=${parti and !rentre ? 'step' : null}">
+            <strong>Retour</strong>
+            <small th:text="${objet.dateRetour != null ? #temporals.format(objet.dateRetour, 'dd/MM/yyyy') : (objet.dateFin != null ? 'Prévu le ' + #temporals.format(objet.dateFin, 'dd/MM/yyyy') : '')}"></small>
+        </li>
+    </ol>
     <dl class="fiche">
         <div>
             <dt>Client</dt>
@@ -33,15 +54,11 @@
             <dt>Date de fin</dt>
             <dd><span th:text="${objet.dateFin != null} ? ${#temporals.format(objet.dateFin, 'dd/MM/yyyy')} : '—'"></span></dd>
         </div>
-        <div>
-            <dt>Statut</dt>
-            <dd><span class="badge" th:classappend="${'badge-' + #strings.toLowerCase(objet.statut)}" th:text="${objet.statut.libelle}"></span></dd>
-        </div>
-        <div>
+        <div th:if="${objet.statut.name() == 'ANNULEE' and objet.dateDepart != null}">
             <dt>Départ effectif</dt>
             <dd th:text="${objet.dateDepart != null} ? ${#temporals.format(objet.dateDepart, 'dd/MM/yyyy')} : '—'"></dd>
         </div>
-        <div>
+        <div th:if="${objet.statut.name() == 'ANNULEE' and objet.dateRetour != null}">
             <dt>Retour effectif</dt>
             <dd th:text="${objet.dateRetour != null} ? ${#temporals.format(objet.dateRetour, 'dd/MM/yyyy')} : '—'"></dd>
         </div>
@@ -49,10 +66,13 @@
     <section class="bloc">
         <div class="titre-bloc">
             <h2>Contrat</h2>
-            <a class="bouton bouton-principal" th:if="${contrat == null}"
+            <a class="bouton bouton-ajout" th:if="${contrat == null}"
                th:href="@{/contrats/nouveau(reservation=${objet.idReservation})}">Établir le contrat</a>
         </div>
-        <p th:if="${contrat != null}"><a th:href="@{/contrats/{id}(id=${contrat.idContrat})}" th:text="|Contrat n°${contrat.idContrat}|"></a></p>
+        <a class="lien-carte" th:if="${contrat != null}" th:href="@{/contrats/{id}(id=${contrat.idContrat})}">
+            <span th:text="|Contrat n°${contrat.idContrat}|"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
         <p class="vide-ligne" th:if="${contrat == null}">Aucun contrat pour cette réservation.</p>
     </section>
 </main>

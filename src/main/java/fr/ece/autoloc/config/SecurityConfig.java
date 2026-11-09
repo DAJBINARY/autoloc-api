@@ -30,7 +30,7 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**", "/vendor/**", "/favicon.ico",
                                 "/", "/catalogue", "/catalogue/**", "/inscription",
-                                "/connexion", "/premiere-connexion", "/actuator/health").permitAll()
+                                "/connexion", "/premiere-connexion", "/actuator/health", "/actuator/prometheus").permitAll()
                         .requestMatchers("/espace", "/espace/**").hasRole("CLIENT")
                         .requestMatchers("/statistiques").hasRole(MANAGER)
                         .requestMatchers(HttpMethod.POST, "/{section}/{id}/supprimer").hasRole(MANAGER)

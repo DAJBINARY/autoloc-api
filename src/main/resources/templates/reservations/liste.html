@@ -7,7 +7,7 @@
 <main>
     <div class="titre-page">
         <h1>Réservations</h1>
-        <a class="bouton bouton-principal" th:href="@{/reservations/nouveau}">Nouvelle réservation</a>
+        <a class="bouton bouton-principal bouton-ajout" th:href="@{/reservations/nouveau}">Nouvelle réservation</a>
     </div>
     <form th:replace="~{fragments/commun :: recherche('Client ou véhicule')}"></form>
     <div class="tableau-conteneur">

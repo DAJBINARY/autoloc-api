@@ -7,7 +7,7 @@
 <main>
     <div class="titre-page">
         <h1>Clients</h1>
-        <a class="bouton bouton-principal" th:href="@{/clients/nouveau}">Nouveau client</a>
+        <a class="bouton bouton-principal bouton-ajout" th:href="@{/clients/nouveau}">Nouveau client</a>
     </div>
     <form th:replace="~{fragments/commun :: recherche('Nom, e-mail, téléphone ou permis')}"></form>
     <div class="tableau-conteneur">
@@ -24,7 +24,7 @@
             </thead>
             <tbody>
             <tr th:each="objet : ${objets}">
-                <td><a th:if="${objet != null}" th:href="@{/clients/{id}(id=${objet.idClient})}" th:text="${objet.nomComplet}"></a><span th:if="${objet == null}">—</span></td>
+                <td><span class="avec-avatar"><span class="avatar" aria-hidden="true" th:text="${#strings.substring(objet.nomComplet, 0, 1)}"></span><a th:href="@{/clients/{id}(id=${objet.idClient})}" th:text="${objet.nomComplet}"></a></span></td>
                 <td><span th:text="${objet.email} ?: '—'"></span></td>
                 <td><span th:text="${objet.telephone} ?: '—'"></span></td>
                 <td><span th:text="${objet.numPermis} ?: '—'"></span></td>

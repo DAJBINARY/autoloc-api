@@ -5,12 +5,17 @@
 </head>
 <body>
 <main>
-    <div class="titre-page">
-        <h1 th:text="${objet.libelle}">Contrat</h1>
+    <div class="titre-page titre-fiche">
+        <div>
+            <a th:replace="~{fragments/commun :: retour}"></a>
+            <div class="titre-ligne">
+                <h1 th:text="${objet.libelle}">Contrat</h1>
+                <span class="badge" th:classappend="${objet.valide} ? 'badge-oui' : 'badge-annulee'" th:text="${objet.valide} ? 'Valide' : 'Non valide'"></span>
+            </div>
+        </div>
         <div class="boutons-page">
             <a class="bouton" th:href="@{/contrats/{id}/imprimer(id=${objet.idContrat})}">Imprimer</a>
-            <a class="bouton" th:href="@{/contrats/{id}/modifier(id=${objet.idContrat})}">Modifier</a>
-            <a class="bouton" th:href="@{/contrats}">Retour à la liste</a>
+            <a class="bouton" th:href="@{/contrats/{id}/modifier(id=${objet.idContrat})}"><svg th:replace="~{fragments/commun :: icone-modifier}"></svg>Modifier</a>
         </div>
     </div>
     <dl class="fiche">
@@ -30,27 +35,30 @@
             <dt>Signature</dt>
             <dd><span th:text="${objet.dateSignature != null} ? ${#temporals.format(objet.dateSignature, 'dd/MM/yyyy')} : '—'"></span></dd>
         </div>
-        <div>
-            <dt>Valide</dt>
-            <dd><span th:text="${objet.valide} ? 'Oui' : 'Non'"></span></dd>
-        </div>
-        <div>
-            <dt>Montant total</dt>
-            <dd><span th:text="${#numbers.formatDecimal(objet.montantTotal, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></dd>
-        </div>
-        <div>
-            <dt>Déjà payé</dt>
-            <dd><span th:text="${#numbers.formatDecimal(paye, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></dd>
-        </div>
-        <div>
-            <dt>Reste à payer</dt>
-            <dd><span th:text="${#numbers.formatDecimal(reste, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></dd>
-        </div>
     </dl>
+    <section class="suivi-paiement" aria-label="Suivi du paiement"
+             th:with="part=${objet.montantTotal != null and objet.montantTotal.signum() > 0 ? paye.doubleValue() * 100 / objet.montantTotal.doubleValue() : 0}">
+        <dl class="suivi-chiffres">
+            <div>
+                <dt>Montant total</dt>
+                <dd th:text="${#numbers.formatDecimal(objet.montantTotal, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></dd>
+            </div>
+            <div>
+                <dt>Déjà payé</dt>
+                <dd th:text="${#numbers.formatDecimal(paye, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></dd>
+            </div>
+            <div>
+                <dt>Reste à payer</dt>
+                <dd th:text="${#numbers.formatDecimal(reste, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></dd>
+            </div>
+        </dl>
+        <progress class="suivi-jauge" max="100" th:value="${part > 100 ? 100 : part}" aria-label="Part du montant déjà payée"></progress>
+        <p class="suivi-part" th:text="|${#numbers.formatInteger(part > 100 ? 100 : part, 1)} % du montant payé|"></p>
+    </section>
     <section class="bloc">
         <div class="titre-bloc">
-            <h2>Paiements</h2>
-            <a class="bouton" th:href="@{/paiements/nouveau(contrat=${objet.idContrat})}">Nouveau paiement</a>
+            <h2>Paiements<span class="compteur" th:text="${#lists.size(paiements)}"></span></h2>
+            <a class="bouton bouton-ajout" th:href="@{/paiements/nouveau(contrat=${objet.idContrat})}">Nouveau paiement</a>
         </div>
         <div class="tableau-conteneur">
             <table class="tableau">

@@ -67,6 +67,7 @@
 
 .bouton-fantome {
     background: transparent;
+    box-shadow: none;
     border-color: rgba(255, 255, 255, .24);
     color: #fff;
 }
@@ -446,26 +447,6 @@
 
 .carte-vehicule:hover .illustration {
     transform: translateX(10px) scale(1.04);
-}
-
-.teinte-0 {
-    color: #ff5a1f;
-}
-
-.teinte-1 {
-    color: #2f7fd6;
-}
-
-.teinte-2 {
-    color: #f1efe9;
-}
-
-.teinte-3 {
-    color: #7c8496;
-}
-
-.teinte-4 {
-    color: #f2b632;
 }
 
 .carte-categorie {

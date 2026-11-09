@@ -5,7 +5,13 @@
 </head>
 <body>
 <main>
-    <h1>Tableau de bord</h1>
+    <div class="titre-page tete-bord">
+        <div>
+            <h1>Tableau de bord</h1>
+            <p class="premiere-majuscule" th:text="${#temporals.format(#temporals.createToday(), 'EEEE d MMMM yyyy')}"></p>
+        </div>
+        <a class="bouton bouton-principal bouton-ajout" th:href="@{/reservations/nouveau}">Nouvelle réservation</a>
+    </div>
     <div class="indicateurs">
         <a class="indicateur" th:href="@{/vehicules}">
             <span class="indicateur-valeur" th:text="|${vehiculesDisponibles} / ${vehiculesTotal}|">0 / 0</span>
@@ -24,13 +30,13 @@
             <span class="carte-titre">Total encaissé</span>
         </a>
     </div>
+    <div class="bord-grille">
     <section class="bloc">
         <div class="titre-bloc">
             <h2>Prochains départs</h2>
-            <a class="bouton" th:href="@{/reservations/nouveau}">Nouvelle réservation</a>
         </div>
         <div class="tableau-conteneur">
-            <table class="tableau">
+            <table class="tableau tableau-serre">
                 <thead>
                 <tr>
                     <th>N°</th>
@@ -57,6 +63,25 @@
             </table>
         </div>
     </section>
+    <section class="bloc">
+        <div class="titre-bloc">
+            <h2>Flotte<span class="compteur" th:text="${vehiculesTotal}"></span></h2>
+        </div>
+        <div class="panneau-flotte">
+            <div class="flotte-barre" role="img" th:if="${vehiculesTotal > 0}"
+                 th:attr="aria-label=|${vehiculesDisponibles} disponibles, ${vehiculesLoues} loués, ${vehiculesEnMaintenance} en maintenance|">
+                <span class="flotte-part flotte-disponible" th:if="${vehiculesDisponibles > 0}" th:style="|flex-grow: ${vehiculesDisponibles}|" th:title="|Disponibles : ${vehiculesDisponibles}|"></span>
+                <span class="flotte-part flotte-loue" th:if="${vehiculesLoues > 0}" th:style="|flex-grow: ${vehiculesLoues}|" th:title="|Loués : ${vehiculesLoues}|"></span>
+                <span class="flotte-part flotte-maintenance" th:if="${vehiculesEnMaintenance > 0}" th:style="|flex-grow: ${vehiculesEnMaintenance}|" th:title="|En maintenance : ${vehiculesEnMaintenance}|"></span>
+            </div>
+            <ul class="flotte-liste">
+                <li><span class="pastille flotte-disponible"></span>Disponibles<strong th:text="${vehiculesDisponibles}"></strong></li>
+                <li><span class="pastille flotte-loue"></span>Loués<strong th:text="${vehiculesLoues}"></strong></li>
+                <li><span class="pastille flotte-maintenance"></span>En maintenance<strong th:text="${vehiculesEnMaintenance}"></strong></li>
+            </ul>
+        </div>
+    </section>
+    </div>
     <section class="bloc">
         <h2>Sections</h2>
         <div class="cartes">

@@ -67,6 +67,14 @@ class SecuriteIhmTest {
     }
 
     @Test
+    void exposeLesMetriquesPrometheusSansOuvrirLesAutresEndpoints() throws Exception {
+        mockMvc.perform(get("/actuator/prometheus"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("jvm_memory_used_bytes")));
+        mockMvc.perform(get("/actuator/env")).andExpect(redirectedUrl("/connexion"));
+    }
+
+    @Test
     void refuseUnFormulaireSansJetonCsrf() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/vehicules")).andExpect(status().isForbidden());
     }

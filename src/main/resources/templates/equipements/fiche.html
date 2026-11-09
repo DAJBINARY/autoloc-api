@@ -5,22 +5,20 @@
 </head>
 <body>
 <main>
-    <div class="titre-page">
-        <h1 th:text="${objet.libelle}">Équipement</h1>
+    <div class="titre-page titre-fiche">
+        <div>
+            <a th:replace="~{fragments/commun :: retour}"></a>
+            <div class="titre-ligne">
+                <h1 th:text="${objet.libelle}">Équipement</h1>
+            </div>
+        </div>
         <div class="boutons-page">
-            <a class="bouton" th:href="@{/equipements/{id}/modifier(id=${objet.idEquipement})}">Modifier</a>
-            <a class="bouton" th:href="@{/equipements}">Retour à la liste</a>
+            <a class="bouton" th:href="@{/equipements/{id}/modifier(id=${objet.idEquipement})}"><svg th:replace="~{fragments/commun :: icone-modifier}"></svg>Modifier</a>
         </div>
     </div>
-    <dl class="fiche">
-        <div>
-            <dt>Libellé</dt>
-            <dd><span th:text="${objet.libelle} ?: '—'"></span></dd>
-        </div>
-    </dl>
-    <section class="bloc">
+    <section class="bloc" style="margin-top: 0">
         <div class="titre-bloc">
-            <h2>Véhicules équipés</h2>
+            <h2>Véhicules équipés<span class="compteur" th:text="${#lists.size(vehicules)}"></span></h2>
         </div>
         <div class="tableau-conteneur">
             <table class="tableau">

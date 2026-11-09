@@ -7,7 +7,7 @@
 <main>
     <div class="titre-page">
         <h1>Contrats</h1>
-        <a class="bouton bouton-principal" th:href="@{/contrats/nouveau}">Nouveau contrat</a>
+        <a class="bouton bouton-principal bouton-ajout" th:href="@{/contrats/nouveau}">Nouveau contrat</a>
     </div>
     <form th:replace="~{fragments/commun :: recherche('Client ou immatriculation')}"></form>
     <div class="tableau-conteneur">
@@ -30,7 +30,7 @@
                 <td><a th:if="${objet.reservation?.vehicule != null}" th:href="@{/vehicules/{id}(id=${objet.reservation?.vehicule.idVehicule})}" th:text="${objet.reservation?.vehicule.libelle}"></a><span th:if="${objet.reservation?.vehicule == null}">—</span></td>
                 <td><span th:text="${objet.dateSignature != null} ? ${#temporals.format(objet.dateSignature, 'dd/MM/yyyy')} : '—'"></span></td>
                 <td class="nombre"><span th:text="${#numbers.formatDecimal(objet.montantTotal, 1, 'WHITESPACE', 2, 'COMMA')} + ' €'"></span></td>
-                <td><span th:text="${objet.valide} ? 'Oui' : 'Non'"></span></td>
+                <td><span class="badge" th:classappend="${objet.valide} ? 'badge-oui'" th:text="${objet.valide} ? 'Oui' : 'Non'"></span></td>
                 <td class="actions">
                     <th:block th:replace="~{fragments/commun :: actions(${objet.idContrat})}"></th:block>
                 </td>

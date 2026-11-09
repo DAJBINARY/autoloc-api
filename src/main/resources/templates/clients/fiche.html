@@ -5,21 +5,26 @@
 </head>
 <body>
 <main>
-    <div class="titre-page">
-        <h1 th:text="${objet.nomComplet}">Client</h1>
+    <div class="titre-page titre-fiche">
+        <div>
+            <a th:replace="~{fragments/commun :: retour}"></a>
+            <div class="titre-ligne">
+                <span class="avatar avatar-grand" aria-hidden="true" th:text="${#strings.substring(objet.nomComplet, 0, 1)}"></span>
+                <h1 th:text="${objet.nomComplet}">Client</h1>
+            </div>
+        </div>
         <div class="boutons-page">
-            <a class="bouton" th:href="@{/clients/{id}/modifier(id=${objet.idClient})}">Modifier</a>
-            <a class="bouton" th:href="@{/clients}">Retour à la liste</a>
+            <a class="bouton" th:href="@{/clients/{id}/modifier(id=${objet.idClient})}"><svg th:replace="~{fragments/commun :: icone-modifier}"></svg>Modifier</a>
         </div>
     </div>
     <dl class="fiche">
         <div>
             <dt>E-mail</dt>
-            <dd><span th:text="${objet.email} ?: '—'"></span></dd>
+            <dd><a th:if="${objet.email != null}" th:href="|mailto:${objet.email}|" th:text="${objet.email}"></a><span th:if="${objet.email == null}">—</span></dd>
         </div>
         <div>
             <dt>Téléphone</dt>
-            <dd><span th:text="${objet.telephone} ?: '—'"></span></dd>
+            <dd><a th:if="${objet.telephone != null}" th:href="|tel:${objet.telephone}|" th:text="${objet.telephone}"></a><span th:if="${objet.telephone == null}">—</span></dd>
         </div>
         <div>
             <dt>Permis</dt>
@@ -32,8 +37,8 @@
     </dl>
     <section class="bloc">
         <div class="titre-bloc">
-            <h2>Réservations</h2>
-            <a class="bouton" th:href="@{/reservations/nouveau(client=${objet.idClient})}">Nouvelle réservation</a>
+            <h2>Réservations<span class="compteur" th:text="${#lists.size(reservations)}"></span></h2>
+            <a class="bouton bouton-ajout" th:href="@{/reservations/nouveau(client=${objet.idClient})}">Nouvelle réservation</a>
         </div>
         <div class="tableau-conteneur">
             <table class="tableau">

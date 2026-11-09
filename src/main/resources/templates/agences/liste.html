@@ -7,7 +7,7 @@
 <main>
     <div class="titre-page">
         <h1>Agences</h1>
-        <a class="bouton bouton-principal" th:if="${estManager}" th:href="@{/agences/nouveau}">Nouvelle agence</a>
+        <a class="bouton bouton-principal bouton-ajout" th:if="${estManager}" th:href="@{/agences/nouveau}">Nouvelle agence</a>
     </div>
     <form th:replace="~{fragments/commun :: recherche('Nom, ville ou adresse')}"></form>
     <div class="tableau-conteneur">
