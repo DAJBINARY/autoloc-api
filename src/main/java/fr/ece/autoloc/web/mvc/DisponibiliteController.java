@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Which vehicles can be rented on given dates, with the price of the rental.

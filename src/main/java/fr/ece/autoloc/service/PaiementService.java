@@ -10,7 +10,11 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-public class PaiementService extends CrudService<Paiement> {
+public class
+PaiementService extends CrudService<Paiement> {
+
+    /** Id that no payment has: nothing is left out of the total. */
+    private static final long AUCUN_PAIEMENT_EXCLU = -1L;
 
     private final PaiementRepository repository;
 
@@ -31,12 +35,12 @@ public class PaiementService extends CrudService<Paiement> {
 
     @Transactional(readOnly = true)
     public BigDecimal totalPourContrat(Long idContrat) {
-        return totalPourContrat(idContrat, null);
+        return repository.totalPourContrat(idContrat, AUCUN_PAIEMENT_EXCLU);
     }
 
     /** Amount already paid on the contract, leaving out the payment being edited. */
     @Transactional(readOnly = true)
     public BigDecimal totalPourContrat(Long idContrat, Long idExclu) {
-        return repository.totalPourContrat(idContrat, idExclu == null ? -1L : idExclu);
+        return repository.totalPourContrat(idContrat, idExclu == null ? AUCUN_PAIEMENT_EXCLU : idExclu);
     }
 }

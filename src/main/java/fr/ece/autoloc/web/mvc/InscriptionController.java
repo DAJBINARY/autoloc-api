@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class InscriptionController {
 
+    private static final String VUE_INSCRIPTION = "site/inscription";
+    private static final String CODE_DOUBLON = "doublon";
+
     private final CompteService comptes;
     private final HttpSessionRequestCache pageDemandee = new HttpSessionRequestCache();
 
@@ -28,7 +31,7 @@ public class InscriptionController {
     @GetMapping("/inscription")
     String formulaire(Model model) {
         model.addAttribute("form", new InscriptionForm());
-        return "site/inscription";
+        return VUE_INSCRIPTION;
     }
 
     @PostMapping("/inscription")
@@ -38,20 +41,20 @@ public class InscriptionController {
             erreurs.rejectValue("confirmation", "different", "Les deux mots de passe sont différents.");
         }
         if (form.getEmail() != null && comptes.identifiantPris(form.getEmail())) {
-            erreurs.rejectValue("email", "doublon", "Cette adresse e-mail est déjà utilisée.");
+            erreurs.rejectValue("email", CODE_DOUBLON, "Cette adresse e-mail est déjà utilisée.");
         }
         if (form.getNumPermis() != null && comptes.permisPris(form.getNumPermis().strip())) {
-            erreurs.rejectValue("numPermis", "doublon", "Ce numéro de permis est déjà enregistré.");
+            erreurs.rejectValue("numPermis", CODE_DOUBLON, "Ce numéro de permis est déjà enregistré.");
         }
         if (erreurs.hasErrors()) {
-            return "site/inscription";
+            return VUE_INSCRIPTION;
         }
         try {
             comptes.inscrireClient(form.getNom(), form.getPrenom(), form.getEmail(), form.getTelephone(),
                     form.getNumPermis(), form.getMotDePasse());
         } catch (DataIntegrityViolationException e) {
-            erreurs.reject("doublon", "Ce compte existe déjà.");
-            return "site/inscription";
+            erreurs.reject(CODE_DOUBLON, "Ce compte existe déjà.");
+            return VUE_INSCRIPTION;
         }
         try {
             requete.login(CompteService.normaliserEmail(form.getEmail()), form.getMotDePasse());

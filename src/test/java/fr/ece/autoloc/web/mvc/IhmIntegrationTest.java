@@ -32,7 +32,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
 
 import static fr.ece.autoloc.domain.CategorieVehicule.SUV;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -402,8 +401,8 @@ class IhmIntegrationTest {
         for (int i = 10; i < 30; i++) {
             vehicules.save(vehicule("AA-0" + i + "-AA"));
         }
-        vehicules.save(new Vehicule(null, "ZZ-000-ZZ", "Dacia", "Spring", SUV, new BigDecimal("40.00"),
-                StatutVehicule.DISPONIBLE, agence, new HashSet<>()));
+        vehicules.save(new Vehicule("ZZ-000-ZZ", "Dacia", "Spring", SUV, new BigDecimal("40.00"),
+                StatutVehicule.DISPONIBLE, agence));
 
         mockMvc.perform(get("/vehicules"))
                 .andExpect(content().string(containsString("Page 1 sur 2")))
@@ -467,7 +466,7 @@ class IhmIntegrationTest {
     }
 
     private Vehicule vehicule(String immatriculation) {
-        return new Vehicule(null, immatriculation, "Peugeot", "3008", SUV,
-                new BigDecimal("70.00"), StatutVehicule.DISPONIBLE, agence, new HashSet<>());
+        return new Vehicule(immatriculation, "Peugeot", "3008", SUV,
+                new BigDecimal("70.00"), StatutVehicule.DISPONIBLE, agence);
     }
 }

@@ -1,5 +1,6 @@
 package fr.ece.autoloc.service;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.Contrat;
 import fr.ece.autoloc.domain.ModePaiement;
 import fr.ece.autoloc.domain.Paiement;
@@ -58,7 +59,7 @@ public class ReservationClientService {
 
     @Transactional
     public Reservation reserver(String email, Long idVehicule, LocalDate debut, LocalDate fin) {
-        if (debut.isBefore(LocalDate.now())) {
+        if (debut.isBefore(LocalDate.now(Horloge.ZONE))) {
             throw new RegleMetierException("La date de début ne peut pas être passée.");
         }
         if (fin.isBefore(debut)) {
@@ -85,8 +86,8 @@ public class ReservationClientService {
             throw new RegleMetierException("Cette réservation n'est plus à payer.");
         }
         BigDecimal montant = calculs.montantEstime(reservation);
-        Contrat contrat = contrats.save(new Contrat(null, LocalDate.now(), montant, true, reservation, null));
-        paiements.save(new Paiement(null, montant, LocalDate.now(), ModePaiement.CARTE, contrat));
+        Contrat contrat = contrats.save(new Contrat(null, LocalDate.now(Horloge.ZONE), montant, true, reservation, null));
+        paiements.save(new Paiement(null, montant, LocalDate.now(Horloge.ZONE), ModePaiement.CARTE, contrat));
         reservation.setStatut(StatutReservation.CONFIRMEE);
     }
 
@@ -95,7 +96,7 @@ public class ReservationClientService {
         Reservation reservation = reservations.findByIdReservationAndClient_Email(id, email).orElseThrow();
         boolean annulable = reservation.getStatut() == StatutReservation.EN_ATTENTE
                 || reservation.getStatut() == StatutReservation.CONFIRMEE;
-        if (!annulable || reservation.getDateDepart() != null || !reservation.getDateDebut().isAfter(LocalDate.now())) {
+        if (!annulable || reservation.getDateDepart() != null || !reservation.getDateDebut().isAfter(LocalDate.now(Horloge.ZONE))) {
             throw new RegleMetierException("Cette réservation ne peut plus être annulée en ligne. Contactez votre agence.");
         }
         reservation.setStatut(StatutReservation.ANNULEE);

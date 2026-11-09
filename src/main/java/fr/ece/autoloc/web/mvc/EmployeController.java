@@ -6,6 +6,7 @@ import fr.ece.autoloc.service.AgenceService;
 import fr.ece.autoloc.service.CompteService;
 import fr.ece.autoloc.service.ContratService;
 import fr.ece.autoloc.service.EmployeService;
+import fr.ece.autoloc.service.RegleMetierException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -66,8 +67,10 @@ public class EmployeController extends CrudController<Employe> {
     }
 
     @Override
-    protected String motifRefusSuppression(Employe objet) {
-        return estUtilisateurConnecte(objet) ? "Vous ne pouvez pas supprimer votre propre compte." : null;
+    protected void verifierSuppression(Employe objet) {
+        if (estUtilisateurConnecte(objet)) {
+            throw new RegleMetierException("Vous ne pouvez pas supprimer votre propre compte.");
+        }
     }
 
     @Override

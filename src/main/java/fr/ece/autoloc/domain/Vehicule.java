@@ -68,9 +68,9 @@ public class Vehicule {
     @Column(name = "place_parking")
     private Integer placeParking;
 
-    public Vehicule(Long idVehicule, String immatriculation, String marque, String modele, CategorieVehicule categorie,
-                    BigDecimal tarifJournalier, StatutVehicule statut, Agence agence, Set<Equipement> equipements) {
-        this.idVehicule = idVehicule;
+    /** A new vehicle, without equipment yet: the id is given by the database. */
+    public Vehicule(String immatriculation, String marque, String modele, CategorieVehicule categorie,
+                    BigDecimal tarifJournalier, StatutVehicule statut, Agence agence) {
         this.immatriculation = immatriculation;
         this.marque = marque;
         this.modele = modele;
@@ -78,7 +78,6 @@ public class Vehicule {
         this.tarifJournalier = tarifJournalier;
         this.statut = statut;
         this.agence = agence;
-        this.equipements = equipements;
     }
 
     /** Stable index of the body colour used to draw this vehicle in the catalogue. */

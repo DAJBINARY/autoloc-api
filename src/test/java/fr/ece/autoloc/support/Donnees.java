@@ -10,7 +10,6 @@ import fr.ece.autoloc.domain.Vehicule;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
 
 /**
  * Valid objects for the tests. A null id gives an object ready to be saved.
@@ -29,8 +28,10 @@ public final class Donnees {
     }
 
     public static Vehicule vehicule(Long id, String immatriculation, Agence agence, StatutVehicule statut) {
-        return new Vehicule(id, immatriculation, "Renault", "Clio", CategorieVehicule.CITADINE,
-                new BigDecimal("40.00"), statut, agence, new HashSet<>());
+        Vehicule vehicule = new Vehicule(immatriculation, "Renault", "Clio", CategorieVehicule.CITADINE,
+                new BigDecimal("40.00"), statut, agence);
+        vehicule.setIdVehicule(id);
+        return vehicule;
     }
 
     public static Reservation reservation(Long id, Client client, Vehicule vehicule, LocalDate debut, LocalDate fin,

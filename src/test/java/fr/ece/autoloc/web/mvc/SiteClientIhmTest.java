@@ -30,7 +30,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -420,8 +419,8 @@ class SiteClientIhmTest {
     }
 
     private Vehicule vehicule(String immatriculation, String marque, String modele, StatutVehicule statut, Integer place) {
-        Vehicule vehicule = new Vehicule(null, immatriculation, marque, modele, CategorieVehicule.CITADINE,
-                new BigDecimal("40.00"), statut, agence, new HashSet<>());
+        Vehicule vehicule = new Vehicule(immatriculation, marque, modele, CategorieVehicule.CITADINE,
+                new BigDecimal("40.00"), statut, agence);
         vehicule.setPlaceParking(place);
         return vehicules.save(vehicule);
     }

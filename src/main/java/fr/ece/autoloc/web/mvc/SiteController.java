@@ -1,5 +1,6 @@
 package fr.ece.autoloc.web.mvc;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.CategorieVehicule;
 import fr.ece.autoloc.domain.StatutVehicule;
 import fr.ece.autoloc.domain.Vehicule;
@@ -65,14 +66,15 @@ public class SiteController {
         model.addAttribute("agence", agence);
         model.addAttribute("categories", CategorieVehicule.values());
         model.addAttribute("agences", agences.lister());
-        model.addAttribute("aujourdhui", LocalDate.now());
+        LocalDate aujourdhui = LocalDate.now(Horloge.ZONE);
+        model.addAttribute(Attributs.AUJOURDHUI, aujourdhui);
 
         boolean unSeulBout = (debut == null) != (fin == null);
-        boolean datesValides = debut != null && fin != null && !fin.isBefore(debut) && !debut.isBefore(LocalDate.now());
+        boolean datesValides = debut != null && fin != null && !fin.isBefore(debut) && !debut.isBefore(aujourdhui);
         if (unSeulBout) {
-            model.addAttribute("erreur", "Indiquez la date de début et la date de fin.");
+            model.addAttribute(Attributs.ERREUR, "Indiquez la date de début et la date de fin.");
         } else if (debut != null && !datesValides) {
-            model.addAttribute("erreur", debut.isBefore(LocalDate.now())
+            model.addAttribute(Attributs.ERREUR, debut.isBefore(aujourdhui)
                     ? "La date de début ne peut pas être passée."
                     : "La date de fin doit être postérieure ou égale à la date de début.");
         }
@@ -100,15 +102,16 @@ public class SiteController {
         model.addAttribute("vehicule", vehicule);
         model.addAttribute("debut", debut);
         model.addAttribute("fin", fin);
-        model.addAttribute("aujourdhui", LocalDate.now());
-        boolean datesValides = debut != null && fin != null && !fin.isBefore(debut) && !debut.isBefore(LocalDate.now());
+        LocalDate aujourdhui = LocalDate.now(Horloge.ZONE);
+        model.addAttribute(Attributs.AUJOURDHUI, aujourdhui);
+        boolean datesValides = debut != null && fin != null && !fin.isBefore(debut) && !debut.isBefore(aujourdhui);
         if (datesValides) {
             boolean libre = catalogue.estLibre(vehicule, debut, fin);
             model.addAttribute("libre", libre);
             model.addAttribute("jours", ChronoUnit.DAYS.between(debut, fin) + 1);
             model.addAttribute("montant", reservations.estimer(vehicule.getTarifJournalier(), debut, fin));
         } else if (debut != null || fin != null) {
-            model.addAttribute("erreur", "Choisissez une période valide, à partir d'aujourd'hui.");
+            model.addAttribute(Attributs.ERREUR, "Choisissez une période valide, à partir d'aujourd'hui.");
         }
         return "site/vehicule";
     }

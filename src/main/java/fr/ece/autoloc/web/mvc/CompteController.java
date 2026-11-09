@@ -21,6 +21,8 @@ import java.security.Principal;
 @Controller
 public class CompteController {
 
+    private static final String REDIRECTION_CONNEXION = "redirect:/connexion";
+
     private final CompteService comptes;
     private final AgenceService agences;
 
@@ -38,7 +40,7 @@ public class CompteController {
     @GetMapping("/premiere-connexion")
     String premiereConnexion(Model model) {
         if (comptes.compteExiste()) {
-            return "redirect:/connexion";
+            return REDIRECTION_CONNEXION;
         }
         model.addAttribute("form", new PremierCompteForm());
         model.addAttribute("agences", agences.lister());
@@ -49,7 +51,7 @@ public class CompteController {
     String creerPremierCompte(@Valid @ModelAttribute("form") PremierCompteForm form, BindingResult erreurs, Model model,
                               RedirectAttributes redirection) {
         if (comptes.compteExiste()) {
-            return "redirect:/connexion";
+            return REDIRECTION_CONNEXION;
         }
         Agence agence = agenceDe(form, erreurs);
         if (erreurs.hasErrors()) {
@@ -63,11 +65,11 @@ public class CompteController {
         try {
             comptes.creerPremierCompte(manager, form.getMotDePasse(), agence);
         } catch (RegleMetierException e) {
-            redirection.addFlashAttribute("erreur", e.getMessage());
-            return "redirect:/connexion";
+            redirection.addFlashAttribute(Attributs.ERREUR, e.getMessage());
+            return REDIRECTION_CONNEXION;
         }
-        redirection.addFlashAttribute("succes", "Compte créé : vous pouvez vous connecter.");
-        return "redirect:/connexion";
+        redirection.addFlashAttribute(Attributs.SUCCES, "Compte créé : vous pouvez vous connecter.");
+        return REDIRECTION_CONNEXION;
     }
 
     private Agence agenceDe(PremierCompteForm form, BindingResult erreurs) {
@@ -96,13 +98,13 @@ public class CompteController {
     String changerMotDePasse(@RequestParam String actuel, @RequestParam String nouveau, @RequestParam String confirmation,
                              Principal utilisateur, Model model, RedirectAttributes redirection) {
         if (nouveau.length() < 8 || nouveau.length() > 72) {
-            model.addAttribute("erreur", "Le nouveau mot de passe doit contenir entre 8 et 72 caractères.");
+            model.addAttribute(Attributs.ERREUR, "Le nouveau mot de passe doit contenir entre 8 et 72 caractères.");
         } else if (!nouveau.equals(confirmation)) {
-            model.addAttribute("erreur", "Les deux nouveaux mots de passe sont différents.");
+            model.addAttribute(Attributs.ERREUR, "Les deux nouveaux mots de passe sont différents.");
         } else if (!comptes.changerMotDePasse(utilisateur.getName(), actuel, nouveau)) {
-            model.addAttribute("erreur", "Le mot de passe actuel est incorrect.");
+            model.addAttribute(Attributs.ERREUR, "Le mot de passe actuel est incorrect.");
         } else {
-            redirection.addFlashAttribute("succes", "Mot de passe modifié.");
+            redirection.addFlashAttribute(Attributs.SUCCES, "Mot de passe modifié.");
             return "redirect:/mon-compte";
         }
         return "compte/mon-compte";

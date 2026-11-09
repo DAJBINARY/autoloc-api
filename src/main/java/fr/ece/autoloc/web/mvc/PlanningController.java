@@ -1,5 +1,6 @@
 package fr.ece.autoloc.web.mvc;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.service.PlanningService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -25,9 +26,9 @@ public class PlanningController {
 
     @GetMapping("/planning")
     String planning(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth mois, Model model) {
-        YearMonth affiche = mois == null ? YearMonth.now() : mois;
+        YearMonth affiche = mois == null ? YearMonth.now(Horloge.ZONE) : mois;
         List<Integer> jours = IntStream.rangeClosed(1, affiche.lengthOfMonth()).boxed().toList();
-        LocalDate aujourdhui = LocalDate.now();
+        LocalDate aujourdhui = LocalDate.now(Horloge.ZONE);
         model.addAttribute("libelleMois", affiche.format(DateTimeFormatter.ofPattern("MMMM yyyy", Locale.FRENCH)));
         model.addAttribute("moisPrecedent", affiche.minusMonths(1).toString());
         model.addAttribute("moisSuivant", affiche.plusMonths(1).toString());

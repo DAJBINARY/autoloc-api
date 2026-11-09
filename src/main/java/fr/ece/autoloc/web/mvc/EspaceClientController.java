@@ -1,5 +1,6 @@
 package fr.ece.autoloc.web.mvc;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.Client;
 import fr.ece.autoloc.domain.Contrat;
 import fr.ece.autoloc.domain.Reservation;
@@ -7,10 +8,8 @@ import fr.ece.autoloc.domain.StatutReservation;
 import fr.ece.autoloc.domain.Vehicule;
 import fr.ece.autoloc.service.CatalogueService;
 import fr.ece.autoloc.service.ClientService;
-import fr.ece.autoloc.service.CompteService;
 import fr.ece.autoloc.service.ContratService;
 import fr.ece.autoloc.service.PaiementService;
-import fr.ece.autoloc.service.ParkingService;
 import fr.ece.autoloc.service.RegleMetierException;
 import fr.ece.autoloc.service.ReservationClientService;
 import fr.ece.autoloc.service.ReservationService;
@@ -37,11 +36,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
- * The signed-in client's area: book, pay, follow their rentals and find their vehicle in the parking.
+ * The signed-in client's area: book, pay and follow their rentals.
+ * The profile and the parking plan have their own controllers under the same path.
  */
 @Controller
 @RequestMapping("/espace")
 public class EspaceClientController {
+
+    private static final String REDIRECTION_RESERVATION = "redirect:/espace/reservations/";
+    private static final String CODE_INVALIDE = "invalide";
 
     private final ReservationClientService reservations;
     private final ReservationService calculs;
@@ -50,13 +53,10 @@ public class EspaceClientController {
     private final ClientService clients;
     private final ContratService contrats;
     private final PaiementService paiements;
-    private final ParkingService parking;
-    private final CompteService comptes;
 
     public EspaceClientController(ReservationClientService reservations, ReservationService calculs,
                                   CatalogueService catalogue, VehiculeService vehicules, ClientService clients,
-                                  ContratService contrats, PaiementService paiements, ParkingService parking,
-                                  CompteService comptes) {
+                                  ContratService contrats, PaiementService paiements) {
         this.reservations = reservations;
         this.calculs = calculs;
         this.catalogue = catalogue;
@@ -64,15 +64,13 @@ public class EspaceClientController {
         this.clients = clients;
         this.contrats = contrats;
         this.paiements = paiements;
-        this.parking = parking;
-        this.comptes = comptes;
     }
 
     @GetMapping
     String accueil(Principal utilisateur, Model model) {
         List<Reservation> toutes = reservations.lister(utilisateur.getName());
-        LocalDate aujourdhui = LocalDate.now();
-        model.addAttribute("client", clientConnecte(utilisateur));
+        LocalDate aujourdhui = LocalDate.now(Horloge.ZONE);
+        model.addAttribute(Attributs.CLIENT, clientConnecte(utilisateur));
         model.addAttribute("reservations", toutes);
         model.addAttribute("prochaine", toutes.stream()
                 .filter(reservation -> reservation.getStatut() != StatutReservation.ANNULEE
@@ -87,18 +85,19 @@ public class EspaceClientController {
     String nouvelleReservation(@RequestParam Long vehicule, @RequestParam(required = false) LocalDate debut,
                                @RequestParam(required = false) LocalDate fin, Model model) {
         Vehicule choisi = vehicules.trouver(vehicule).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        model.addAttribute("vehicule", choisi);
+        LocalDate aujourdhui = LocalDate.now(Horloge.ZONE);
+        model.addAttribute(Attributs.VEHICULE, choisi);
         model.addAttribute("debut", debut);
         model.addAttribute("fin", fin);
-        model.addAttribute("aujourdhui", LocalDate.now());
-        boolean datesValides = debut != null && fin != null && !fin.isBefore(debut) && !debut.isBefore(LocalDate.now());
+        model.addAttribute(Attributs.AUJOURDHUI, aujourdhui);
+        boolean datesValides = debut != null && fin != null && !fin.isBefore(debut) && !debut.isBefore(aujourdhui);
         model.addAttribute("datesValides", datesValides);
         if (datesValides) {
             model.addAttribute("libre", catalogue.estLibre(choisi, debut, fin));
-            model.addAttribute("jours", ChronoUnit.DAYS.between(debut, fin) + 1);
-            model.addAttribute("montant", calculs.estimer(choisi.getTarifJournalier(), debut, fin));
+            model.addAttribute(Attributs.JOURS, ChronoUnit.DAYS.between(debut, fin) + 1);
+            model.addAttribute(Attributs.MONTANT, calculs.estimer(choisi.getTarifJournalier(), debut, fin));
         } else if (debut != null || fin != null) {
-            model.addAttribute("erreur", "Choisissez une période valide, à partir d'aujourd'hui.");
+            model.addAttribute(Attributs.ERREUR, "Choisissez une période valide, à partir d'aujourd'hui.");
         }
         return "espace/reservation-nouvelle";
     }
@@ -108,10 +107,10 @@ public class EspaceClientController {
                     Principal utilisateur, RedirectAttributes redirection) {
         try {
             Reservation reservation = reservations.reserver(utilisateur.getName(), vehicule, debut, fin);
-            return "redirect:/espace/reservations/" + reservation.getIdReservation() + "/paiement";
+            return REDIRECTION_RESERVATION + reservation.getIdReservation() + "/paiement";
         } catch (RegleMetierException e) {
-            redirection.addFlashAttribute("erreur", e.getMessage());
-            redirection.addAttribute("vehicule", vehicule);
+            redirection.addFlashAttribute(Attributs.ERREUR, e.getMessage());
+            redirection.addAttribute(Attributs.VEHICULE, vehicule);
             redirection.addAttribute("debut", debut);
             redirection.addAttribute("fin", fin);
             return "redirect:/espace/reservations/nouvelle";
@@ -121,7 +120,7 @@ public class EspaceClientController {
     @GetMapping("/reservations/{id}")
     String reservation(@PathVariable Long id, Principal utilisateur, Model model) {
         Reservation reservation = charger(id, utilisateur);
-        model.addAttribute("reservation", reservation);
+        model.addAttribute(Attributs.RESERVATION, reservation);
         ajouterMontants(reservation, model);
         return "espace/reservation";
     }
@@ -130,7 +129,7 @@ public class EspaceClientController {
     String paiement(@PathVariable Long id, Principal utilisateur, Model model) {
         Reservation reservation = charger(id, utilisateur);
         if (reservation.getStatut() != StatutReservation.EN_ATTENTE) {
-            return "redirect:/espace/reservations/" + id;
+            return REDIRECTION_RESERVATION + id;
         }
         model.addAttribute("form", new PaiementForm());
         return afficherPaiement(reservation, model);
@@ -144,13 +143,13 @@ public class EspaceClientController {
             erreurs.rejectValue("titulaire", "obligatoire", "Ce champ est obligatoire.");
         }
         if (!form.numeroValide()) {
-            erreurs.rejectValue("numero", "invalide", "Numéro de carte invalide.");
+            erreurs.rejectValue("numero", CODE_INVALIDE, "Numéro de carte invalide.");
         }
         if (!form.expirationValide()) {
-            erreurs.rejectValue("expiration", "invalide", "Date invalide ou dépassée (format MM/AA).");
+            erreurs.rejectValue("expiration", CODE_INVALIDE, "Date invalide ou dépassée (format MM/AA).");
         }
         if (!form.cryptogrammeValide()) {
-            erreurs.rejectValue("cryptogramme", "invalide", "3 ou 4 chiffres.");
+            erreurs.rejectValue("cryptogramme", CODE_INVALIDE, "3 ou 4 chiffres.");
         }
         if (erreurs.hasErrors()) {
             return afficherPaiement(reservation, model);
@@ -158,37 +157,24 @@ public class EspaceClientController {
         try {
             reservations.payerEnLigne(id, utilisateur.getName());
         } catch (RegleMetierException e) {
-            redirection.addFlashAttribute("erreur", e.getMessage());
-            return "redirect:/espace/reservations/" + id;
+            redirection.addFlashAttribute(Attributs.ERREUR, e.getMessage());
+            return REDIRECTION_RESERVATION + id;
         }
-        return "redirect:/espace/reservations/" + id + "/confirmation";
+        return REDIRECTION_RESERVATION + id + "/confirmation";
     }
 
     @PostMapping("/reservations/{id}/payer-en-agence")
     String payerEnAgence(@PathVariable Long id, Principal utilisateur) {
         charger(id, utilisateur);
-        return "redirect:/espace/reservations/" + id + "/confirmation";
+        return REDIRECTION_RESERVATION + id + "/confirmation";
     }
 
     @GetMapping("/reservations/{id}/confirmation")
     String confirmation(@PathVariable Long id, Principal utilisateur, Model model) {
         Reservation reservation = charger(id, utilisateur);
-        model.addAttribute("reservation", reservation);
+        model.addAttribute(Attributs.RESERVATION, reservation);
         ajouterMontants(reservation, model);
         return "espace/confirmation";
-    }
-
-    @GetMapping("/reservations/{id}/parking")
-    String parking(@PathVariable Long id, Principal utilisateur, Model model) {
-        Reservation reservation = charger(id, utilisateur);
-        Vehicule vehicule = reservation.getVehicule();
-        if (vehicule == null || vehicule.getAgence() == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        model.addAttribute("reservation", reservation);
-        model.addAttribute("vehicule", vehicule);
-        model.addAttribute("places", parking.plan(vehicule.getAgence().getIdAgence(), vehicule.getIdVehicule()));
-        return "espace/parking";
     }
 
     @GetMapping("/reservations/{id}/contrat")
@@ -197,7 +183,7 @@ public class EspaceClientController {
         Contrat contrat = contrats.trouverParReservation(reservation.getIdReservation())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         BigDecimal paye = paiements.totalPourContrat(contrat.getIdContrat());
-        model.addAttribute("objet", contrat);
+        model.addAttribute(Attributs.OBJET, contrat);
         model.addAttribute("paye", paye);
         model.addAttribute("reste", contrat.getMontantTotal().subtract(paye));
         model.addAttribute("retour", "/espace/reservations/" + id);
@@ -209,70 +195,38 @@ public class EspaceClientController {
         charger(id, utilisateur);
         try {
             reservations.annuler(id, utilisateur.getName());
-            redirection.addFlashAttribute("succes", "Votre réservation est annulée.");
+            redirection.addFlashAttribute(Attributs.SUCCES, "Votre réservation est annulée.");
         } catch (RegleMetierException e) {
-            redirection.addFlashAttribute("erreur", e.getMessage());
+            redirection.addFlashAttribute(Attributs.ERREUR, e.getMessage());
         }
-        return "redirect:/espace/reservations/" + id;
-    }
-
-    @GetMapping("/profil")
-    String profil(Principal utilisateur, Model model) {
-        Client client = clientConnecte(utilisateur);
-        ProfilForm form = new ProfilForm();
-        form.setPrenom(client.getPrenom());
-        form.setNom(client.getNom());
-        form.setTelephone(client.getTelephone());
-        model.addAttribute("form", form);
-        model.addAttribute("client", client);
-        return "espace/profil";
-    }
-
-    @PostMapping("/profil")
-    String enregistrerProfil(@Valid @ModelAttribute("form") ProfilForm form, BindingResult erreurs, Principal utilisateur,
-                             Model model, RedirectAttributes redirection) {
-        Client client = clientConnecte(utilisateur);
-        if (erreurs.hasErrors()) {
-            model.addAttribute("client", client);
-            return "espace/profil";
-        }
-        client.setPrenom(form.getPrenom().strip());
-        client.setNom(form.getNom().strip());
-        client.setTelephone(form.getTelephone().strip());
-        clients.enregistrer(client);
-        redirection.addFlashAttribute("succes", "Profil enregistré.");
-        return "redirect:/espace/profil";
-    }
-
-    @PostMapping("/mot-de-passe")
-    String changerMotDePasse(@RequestParam String actuel, @RequestParam String nouveau, @RequestParam String confirmation,
-                             Principal utilisateur, RedirectAttributes redirection) {
-        if (nouveau.length() < 8 || nouveau.length() > 72) {
-            redirection.addFlashAttribute("erreur", "Le nouveau mot de passe doit contenir entre 8 et 72 caractères.");
-        } else if (!nouveau.equals(confirmation)) {
-            redirection.addFlashAttribute("erreur", "Les deux nouveaux mots de passe sont différents.");
-        } else if (!comptes.changerMotDePasseClient(utilisateur.getName(), actuel, nouveau)) {
-            redirection.addFlashAttribute("erreur", "Le mot de passe actuel est incorrect.");
-        } else {
-            redirection.addFlashAttribute("succes", "Mot de passe modifié.");
-        }
-        return "redirect:/espace/profil";
+        return REDIRECTION_RESERVATION + id;
     }
 
     private String afficherPaiement(Reservation reservation, Model model) {
-        model.addAttribute("reservation", reservation);
-        model.addAttribute("montant", calculs.montantEstime(reservation));
-        model.addAttribute("jours", ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin()) + 1);
+        model.addAttribute(Attributs.RESERVATION, reservation);
+        model.addAttribute(Attributs.MONTANT, calculs.montantEstime(reservation));
+        model.addAttribute(Attributs.JOURS, jours(reservation));
         return "espace/paiement";
     }
 
     private void ajouterMontants(Reservation reservation, Model model) {
-        model.addAttribute("jours", ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin()) + 1);
+        model.addAttribute(Attributs.JOURS, jours(reservation));
         Contrat contrat = contrats.trouverParReservation(reservation.getIdReservation()).orElse(null);
         model.addAttribute("contrat", contrat);
-        model.addAttribute("montant", contrat != null ? contrat.getMontantTotal()
-                : reservation.getVehicule() != null ? calculs.montantEstime(reservation) : BigDecimal.ZERO);
+        model.addAttribute(Attributs.MONTANT, montant(reservation, contrat));
         model.addAttribute("paye", contrat != null ? paiements.totalPourContrat(contrat.getIdContrat()) : BigDecimal.ZERO);
+    }
+
+    /** Amount of the signed contract, or the estimate while there is none yet. */
+    private BigDecimal montant(Reservation reservation, Contrat contrat) {
+        if (contrat != null) {
+            return contrat.getMontantTotal();
+        }
+        return reservation.getVehicule() != null ? calculs.montantEstime(reservation) : BigDecimal.ZERO;
+    }
+
+    private static long jours(Reservation reservation) {
+        return ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin()) + 1;
     }
 
     /** Someone else's reservation answers exactly like one that does not exist. */

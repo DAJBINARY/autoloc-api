@@ -1,5 +1,6 @@
 package fr.ece.autoloc.service;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.Reservation;
 import fr.ece.autoloc.domain.StatutReservation;
 import fr.ece.autoloc.domain.StatutVehicule;
@@ -53,7 +54,7 @@ public class ReservationService extends CrudService<Reservation> {
         Vehicule vehicule = reservation.getVehicule();
         exiger(vehicule != null && vehicule.getStatut() == StatutVehicule.DISPONIBLE,
                 "Le véhicule n'est pas disponible pour un départ.");
-        reservation.marquerDepart(LocalDate.now());
+        reservation.marquerDepart(LocalDate.now(Horloge.ZONE));
         vehicule.setStatut(StatutVehicule.LOUE);
     }
 
@@ -61,7 +62,7 @@ public class ReservationService extends CrudService<Reservation> {
     public void enregistrerRetour(Long id) {
         Reservation reservation = repository.findById(id).orElseThrow();
         exiger(reservation.isEnCours(), "Aucun départ en cours pour cette réservation.");
-        reservation.marquerRetour(LocalDate.now());
+        reservation.marquerRetour(LocalDate.now(Horloge.ZONE));
         reservation.setStatut(StatutReservation.TERMINEE);
         Vehicule vehicule = reservation.getVehicule();
         vehicule.setStatut(maintenances.existsByVehicule_IdVehiculeAndDateFinIsNull(vehicule.getIdVehicule())
@@ -102,7 +103,7 @@ public class ReservationService extends CrudService<Reservation> {
 
     @Transactional(readOnly = true)
     public List<Reservation> prochainsDeparts() {
-        return repository.findTop5ByDateDebutGreaterThanEqualAndStatutInOrderByDateDebutAsc(LocalDate.now(),
+        return repository.findTop5ByDateDebutGreaterThanEqualAndStatutInOrderByDateDebutAsc(LocalDate.now(Horloge.ZONE),
                 List.of(StatutReservation.EN_ATTENTE, StatutReservation.CONFIRMEE));
     }
 

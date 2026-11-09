@@ -1,5 +1,6 @@
 package fr.ece.autoloc.web.mvc;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.Client;
 import fr.ece.autoloc.service.ClientService;
 import fr.ece.autoloc.service.CompteService;
@@ -42,7 +43,7 @@ public class ClientController extends CrudController<Client> {
 
     private static Client nouveauAvecDate() {
         Client client = new Client();
-        client.setDateInscription(LocalDate.now());
+        client.setDateInscription(LocalDate.now(Horloge.ZONE));
         return client;
     }
 

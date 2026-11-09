@@ -1,5 +1,6 @@
 package fr.ece.autoloc.service;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.Maintenance;
 import fr.ece.autoloc.domain.StatutVehicule;
 import fr.ece.autoloc.domain.Vehicule;
@@ -57,7 +58,7 @@ public class MaintenanceService extends CrudService<Maintenance> {
         if (maintenance.getVehicule() == null) {
             throw new RegleMetierException("Renseignez d'abord le véhicule de cette maintenance.");
         }
-        maintenance.setDateFin(LocalDate.now());
+        maintenance.setDateFin(LocalDate.now(Horloge.ZONE));
         repository.flush();
         synchroniserVehicule(maintenance.getVehicule().getIdVehicule());
     }

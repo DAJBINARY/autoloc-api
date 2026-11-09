@@ -24,7 +24,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.function.LongConsumer;
 import java.util.function.Supplier;
 
 /**
@@ -33,6 +33,8 @@ import java.util.function.Supplier;
  * and {@code <section>/formulaire}.
  */
 public abstract class CrudController<T> {
+
+    private static final String REDIRECTION = "redirect:/";
 
     private final CrudService<T> service;
     private final String section;
@@ -59,9 +61,8 @@ public abstract class CrudController<T> {
     protected void preremplir(T objet, Map<String, String> parametres) {
     }
 
-    /** Reason why this element must not be deleted, or null when it can be. */
-    protected String motifRefusSuppression(T objet) {
-        return null;
+    /** Refuses the deletion of this element by throwing a {@link RegleMetierException} with the reason. */
+    protected void verifierSuppression(T objet) {
     }
 
     /** Linked data shown on the detail screen. */
@@ -69,15 +70,15 @@ public abstract class CrudController<T> {
     }
 
     /** Runs a workflow action and comes back to the detail screen with its outcome. */
-    protected String action(Long id, Consumer<Long> traitement, String succes, RedirectAttributes redirection) {
+    protected String action(Long id, LongConsumer traitement, String succes, RedirectAttributes redirection) {
         charger(id);
         try {
             traitement.accept(id);
-            redirection.addFlashAttribute("succes", succes);
+            redirection.addFlashAttribute(Attributs.SUCCES, succes);
         } catch (RegleMetierException e) {
-            redirection.addFlashAttribute("erreur", e.getMessage());
+            redirection.addFlashAttribute(Attributs.ERREUR, e.getMessage());
         }
-        return "redirect:/" + section + "/" + id;
+        return REDIRECTION + section + "/" + id;
     }
 
     protected static Optional<Long> idDe(Map<String, String> parametres, String nom) {
@@ -120,7 +121,7 @@ public abstract class CrudController<T> {
     String nouveau(@RequestParam Map<String, String> parametres, Model model) {
         T objet = fabrique.get();
         preremplir(objet, parametres);
-        model.addAttribute("objet", objet);
+        model.addAttribute(Attributs.OBJET, objet);
         return formulaire(objet, model, null);
     }
 
@@ -133,7 +134,7 @@ public abstract class CrudController<T> {
     @GetMapping("/{id}")
     String fiche(@PathVariable Long id, Model model) {
         T objet = charger(id);
-        model.addAttribute("objet", objet);
+        model.addAttribute(Attributs.OBJET, objet);
         completerFiche(objet, model);
         return section + "/fiche";
     }
@@ -141,7 +142,7 @@ public abstract class CrudController<T> {
     @GetMapping("/{id}/modifier")
     String modifier(@PathVariable Long id, Model model) {
         T objet = charger(id);
-        model.addAttribute("objet", objet);
+        model.addAttribute(Attributs.OBJET, objet);
         return formulaire(objet, model, id);
     }
 
@@ -154,18 +155,16 @@ public abstract class CrudController<T> {
 
     @PostMapping("/{id}/supprimer")
     String supprimer(@PathVariable Long id, RedirectAttributes redirection) {
-        String motif = motifRefusSuppression(charger(id));
-        if (motif != null) {
-            redirection.addFlashAttribute("erreur", motif);
-            return "redirect:/" + section;
-        }
         try {
+            verifierSuppression(charger(id));
             service.supprimer(id);
-            redirection.addFlashAttribute("succes", "Suppression effectuée.");
+            redirection.addFlashAttribute(Attributs.SUCCES, "Suppression effectuée.");
+        } catch (RegleMetierException e) {
+            redirection.addFlashAttribute(Attributs.ERREUR, e.getMessage());
         } catch (DataIntegrityViolationException e) {
-            redirection.addFlashAttribute("erreur", "Suppression impossible : cet élément est encore utilisé.");
+            redirection.addFlashAttribute(Attributs.ERREUR, "Suppression impossible : cet élément est encore utilisé.");
         }
-        return "redirect:/" + section;
+        return REDIRECTION + section;
     }
 
     private String enregistrer(T objet, Long id, BindingResult erreurs, Model model, RedirectAttributes redirection) {
@@ -181,8 +180,8 @@ public abstract class CrudController<T> {
             erreurs.reject("unicite", "Enregistrement impossible : une valeur unique est déjà utilisée.");
             return formulaire(objet, model, id);
         }
-        redirection.addFlashAttribute("succes", "Enregistrement effectué.");
-        return "redirect:/" + section;
+        redirection.addFlashAttribute(Attributs.SUCCES, "Enregistrement effectué.");
+        return REDIRECTION + section;
     }
 
     private String formulaire(T objet, Model model, Long id) {

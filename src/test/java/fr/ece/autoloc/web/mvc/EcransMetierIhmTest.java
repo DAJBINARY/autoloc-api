@@ -34,7 +34,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -339,8 +338,8 @@ class EcransMetierIhmTest {
     }
 
     private Vehicule vehicule(String immatriculation, CategorieVehicule categorie) {
-        return new Vehicule(null, immatriculation, "Peugeot", "3008", categorie, new BigDecimal("70.00"),
-                StatutVehicule.DISPONIBLE, agence, new HashSet<>());
+        return new Vehicule(immatriculation, "Peugeot", "3008", categorie, new BigDecimal("70.00"),
+                StatutVehicule.DISPONIBLE, agence);
     }
 
     private static MockHttpServletRequestBuilder post(String url) {

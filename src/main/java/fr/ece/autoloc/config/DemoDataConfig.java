@@ -4,6 +4,7 @@ import fr.ece.autoloc.domain.*;
 import fr.ece.autoloc.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,10 +27,9 @@ import java.util.Set;
 @Slf4j
 public class DemoDataConfig {
 
-    /** Only ever set by this dev-profile class. */
-    private static final String MOT_DE_PASSE_DEMO = "demo1234";
     private static final String EMAIL_CLIENT_DEMO = "alice.durand@example.com";
     private static final int FLOTTE_DEMO = 9;
+    private static final String RENAULT = "Renault";
 
     private final AgenceRepository agences;
     private final EmployeRepository employes;
@@ -42,13 +42,17 @@ public class DemoDataConfig {
     private final MaintenanceRepository maintenances;
     private final PasswordEncoder encodeur;
 
+    /** Password of every demo login, read from application-dev.properties rather than written in the code. */
+    @Value("${autoloc.demo.mot-de-passe}")
+    private String motDePasseDemo;
+
     /** Also runs on a database seeded by an earlier version: gives it parking places and a client login. */
     @Bean
     @Order(2)
     CommandLineRunner completerDemoData() {
         return args -> {
             clients.findByEmail(EMAIL_CLIENT_DEMO).filter(client -> !client.aUnCompte()).ifPresent(client -> {
-                client.changerMotDePasse(encodeur.encode(MOT_DE_PASSE_DEMO));
+                client.changerMotDePasse(encodeur.encode(motDePasseDemo));
                 clients.save(client);
             });
             ajouterVehiculesDemo();
@@ -68,7 +72,7 @@ public class DemoDataConfig {
                     vehicules.save(vehicule);
                 }
             }
-            log.info("Demo client login: {}, password {}", EMAIL_CLIENT_DEMO, MOT_DE_PASSE_DEMO);
+            log.info("Demo client login: {}, password {}", EMAIL_CLIENT_DEMO, motDePasseDemo);
         };
     }
 
@@ -81,7 +85,7 @@ public class DemoDataConfig {
                 return;
             }
 
-            LocalDate aujourdhui = LocalDate.now();
+            LocalDate aujourdhui = LocalDate.now(Horloge.ZONE);
             Agence paris = agences.save(new Agence(null, "AutoLoc Paris", "Paris", "37 quai de Grenelle", "01 44 00 00 00"));
             Agence lyon = agences.save(new Agence(null, "AutoLoc Lyon", "Lyon", "12 rue de la République", "04 72 00 00 00"));
 
@@ -103,7 +107,7 @@ public class DemoDataConfig {
             // Vehicles inserted by an earlier version of this class are kept and linked to an agency.
             List<Vehicule> flotte = new ArrayList<>(vehicules.findAll());
             if (flotte.isEmpty()) {
-                flotte.add(vehicule("AA-123-AA", "Renault", "Clio", CategorieVehicule.CITADINE, "35.00", StatutVehicule.DISPONIBLE));
+                flotte.add(vehicule("AA-123-AA", RENAULT, "Clio", CategorieVehicule.CITADINE, "35.00", StatutVehicule.DISPONIBLE));
                 flotte.add(vehicule("BB-456-BB", "Peugeot", "3008", CategorieVehicule.SUV, "70.00", StatutVehicule.DISPONIBLE));
                 flotte.add(vehicule("CC-789-CC", "Citroen", "Berlingo", CategorieVehicule.UTILITAIRE, "55.00", StatutVehicule.MAINTENANCE));
             }
@@ -139,7 +143,7 @@ public class DemoDataConfig {
             maintenances.save(new Maintenance(null, aujourdhui.minusDays(2), null, "Révision des freins", dernier));
 
             log.info("Demo data inserted for {} vehicles. Demo logins: manager and agent, password {}",
-                    flotte.size(), MOT_DE_PASSE_DEMO);
+                    flotte.size(), motDePasseDemo);
         };
     }
 
@@ -151,11 +155,11 @@ public class DemoDataConfig {
         }
         List<Vehicule> ajouts = List.of(
                 vehicule("DD-101-DD", "Fiat", "500", CategorieVehicule.CITADINE, "32.00", StatutVehicule.DISPONIBLE),
-                vehicule("EE-202-EE", "Renault", "Megane", CategorieVehicule.BERLINE, "49.00", StatutVehicule.DISPONIBLE),
+                vehicule("EE-202-EE", RENAULT, "Megane", CategorieVehicule.BERLINE, "49.00", StatutVehicule.DISPONIBLE),
                 vehicule("FF-303-FF", "Toyota", "RAV4", CategorieVehicule.SUV, "79.00", StatutVehicule.DISPONIBLE),
                 vehicule("GG-404-GG", "Dacia", "Duster", CategorieVehicule.SUV, "58.00", StatutVehicule.DISPONIBLE),
                 vehicule("HH-505-HH", "Peugeot", "508", CategorieVehicule.BERLINE, "65.00", StatutVehicule.DISPONIBLE),
-                vehicule("JJ-606-JJ", "Renault", "Master", CategorieVehicule.UTILITAIRE, "89.00", StatutVehicule.DISPONIBLE));
+                vehicule("JJ-606-JJ", RENAULT, "Master", CategorieVehicule.UTILITAIRE, "89.00", StatutVehicule.DISPONIBLE));
         for (int i = 0; i < ajouts.size(); i++) {
             Vehicule ajout = ajouts.get(i);
             if (vehicules.count() < FLOTTE_DEMO && !vehicules.existsByImmatriculation(ajout.getImmatriculation())) {
@@ -167,7 +171,7 @@ public class DemoDataConfig {
 
     private Employe compte(Employe employe, String identifiant) {
         employe.setIdentifiant(identifiant);
-        employe.changerMotDePasse(encodeur.encode(MOT_DE_PASSE_DEMO));
+        employe.changerMotDePasse(encodeur.encode(motDePasseDemo));
         return employe;
     }
 

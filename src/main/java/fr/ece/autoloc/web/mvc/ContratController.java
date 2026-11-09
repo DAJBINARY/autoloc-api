@@ -1,7 +1,7 @@
 package fr.ece.autoloc.web.mvc;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.Contrat;
-import fr.ece.autoloc.domain.Reservation;
 import fr.ece.autoloc.service.ContratService;
 import fr.ece.autoloc.service.EmployeService;
 import fr.ece.autoloc.service.PaiementService;
@@ -46,7 +46,7 @@ public class ContratController extends CrudController<Contrat> {
 
     private static Contrat nouveauAvecDate() {
         Contrat contrat = new Contrat();
-        contrat.setDateSignature(LocalDate.now());
+        contrat.setDateSignature(LocalDate.now(Horloge.ZONE));
         return contrat;
     }
 

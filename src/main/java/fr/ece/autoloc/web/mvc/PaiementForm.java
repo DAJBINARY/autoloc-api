@@ -1,5 +1,6 @@
 package fr.ece.autoloc.web.mvc;
 
+import fr.ece.autoloc.config.Horloge;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +39,7 @@ public class PaiementForm {
         }
         String[] morceaux = expiration.strip().split("/");
         return !java.time.YearMonth.of(2000 + Integer.parseInt(morceaux[1]), Integer.parseInt(morceaux[0]))
-                .isBefore(java.time.YearMonth.now());
+                .isBefore(java.time.YearMonth.now(Horloge.ZONE));
     }
 
     public boolean cryptogrammeValide() {

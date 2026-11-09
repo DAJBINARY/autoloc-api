@@ -4,6 +4,7 @@ import fr.ece.autoloc.domain.Reservation;
 import fr.ece.autoloc.domain.StatutReservation;
 import fr.ece.autoloc.service.ClientService;
 import fr.ece.autoloc.service.ContratService;
+import fr.ece.autoloc.service.RegleMetierException;
 import fr.ece.autoloc.service.ReservationService;
 import fr.ece.autoloc.service.VehiculeService;
 import org.springframework.stereotype.Controller;
@@ -61,8 +62,10 @@ public class ReservationController extends CrudController<Reservation> {
     }
 
     @Override
-    protected String motifRefusSuppression(Reservation objet) {
-        return objet.isEnCours() ? "Suppression impossible : enregistrez d'abord le retour du véhicule." : null;
+    protected void verifierSuppression(Reservation objet) {
+        if (objet.isEnCours()) {
+            throw new RegleMetierException("Suppression impossible : enregistrez d'abord le retour du véhicule.");
+        }
     }
 
     @Override
@@ -75,7 +78,7 @@ public class ReservationController extends CrudController<Reservation> {
             }
             if (existante.isEnCours() && (objet.getVehicule() == null
                     || !objet.getVehicule().getIdVehicule().equals(existante.getVehicule().getIdVehicule()))) {
-                erreurs.rejectValue("vehicule", "enCours", "Location en cours : le véhicule ne peut plus changer.");
+                erreurs.rejectValue(Attributs.VEHICULE, "enCours", "Location en cours : le véhicule ne peut plus changer.");
             }
         }
         if (objet.getDateDebut() == null || objet.getDateFin() == null) {
@@ -86,10 +89,10 @@ public class ReservationController extends CrudController<Reservation> {
         } else if (objet.getVehicule() != null && objet.getStatut() != StatutReservation.ANNULEE
                 && service.vehiculeDejaReserve(objet.getVehicule().getIdVehicule(), objet.getDateDebut(),
                 objet.getDateFin(), objet.getIdReservation())) {
-            erreurs.rejectValue("vehicule", "chevauchement", "Ce véhicule est déjà réservé sur ces dates.");
+            erreurs.rejectValue(Attributs.VEHICULE, "chevauchement", "Ce véhicule est déjà réservé sur ces dates.");
         } else if (objet.getVehicule() != null && objet.getStatut() != StatutReservation.ANNULEE
                 && service.vehiculeEnMaintenance(objet.getVehicule().getIdVehicule(), objet.getDateDebut(), objet.getDateFin())) {
-            erreurs.rejectValue("vehicule", "maintenance", "Ce véhicule est en maintenance sur ces dates.");
+            erreurs.rejectValue(Attributs.VEHICULE, "maintenance", "Ce véhicule est en maintenance sur ces dates.");
         }
     }
 
@@ -102,7 +105,7 @@ public class ReservationController extends CrudController<Reservation> {
     @Override
     protected void preremplir(Reservation objet, Map<String, String> parametres) {
         idDe(parametres, "client").flatMap(clients::trouver).ifPresent(objet::setClient);
-        idDe(parametres, "vehicule").flatMap(vehicules::trouver).ifPresent(objet::setVehicule);
+        idDe(parametres, Attributs.VEHICULE).flatMap(vehicules::trouver).ifPresent(objet::setVehicule);
         dateDe(parametres, "debut").ifPresent(objet::setDateDebut);
         dateDe(parametres, "fin").ifPresent(objet::setDateFin);
     }

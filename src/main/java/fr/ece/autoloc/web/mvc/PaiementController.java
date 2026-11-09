@@ -1,5 +1,6 @@
 package fr.ece.autoloc.web.mvc;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.ModePaiement;
 import fr.ece.autoloc.domain.Paiement;
 import fr.ece.autoloc.service.ContratService;
@@ -34,7 +35,7 @@ public class PaiementController extends CrudController<Paiement> {
 
     private static Paiement nouveauAvecDate() {
         Paiement paiement = new Paiement();
-        paiement.setDatePaiement(LocalDate.now());
+        paiement.setDatePaiement(LocalDate.now(Horloge.ZONE));
         return paiement;
     }
 

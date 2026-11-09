@@ -24,7 +24,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, RedirectionApresConnexion redirection) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, RedirectionApresConnexion redirection) {
         return http
                 .authorizeHttpRequests(regles -> regles
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()

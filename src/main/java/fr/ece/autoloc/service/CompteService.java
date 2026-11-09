@@ -1,5 +1,6 @@
 package fr.ece.autoloc.service;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.Agence;
 import fr.ece.autoloc.domain.Client;
 import fr.ece.autoloc.domain.Employe;
@@ -73,7 +74,7 @@ public class CompteService implements UserDetailsService {
     @Transactional
     public void inscrireClient(String nom, String prenom, String email, String telephone, String numPermis, String motDePasse) {
         Client client = new Client(null, nom.strip(), prenom.strip(), normaliserEmail(email), telephone.strip(),
-                numPermis.strip(), LocalDate.now());
+                numPermis.strip(), LocalDate.now(Horloge.ZONE));
         client.changerMotDePasse(encodeur.encode(motDePasse));
         clients.save(client);
     }
@@ -89,7 +90,7 @@ public class CompteService implements UserDetailsService {
 
     @Transactional
     public void creerPremierCompte(Employe manager, String motDePasse, Agence agence) {
-        if (compteExiste()) {
+        if (employes.existsByMotDePasseIsNotNull()) {
             throw new RegleMetierException("Un compte existe déjà : connectez-vous.");
         }
         manager.setRole(RoleEmploye.MANAGER);

@@ -17,23 +17,30 @@ public class AccueilController {
     private final PaiementService paiements;
     private final List<Section> sections;
 
-    public AccueilController(VehiculeService vehicules, ClientService clients, AgenceService agences,
-                             EmployeService employes, ReservationService reservations, ContratService contrats,
-                             PaiementService paiements, MaintenanceService maintenances,
-                             EquipementService equipements) {
+    /** Cards of the dashboard, in display order. */
+    private static final List<Libelle> LIBELLES = List.of(
+            new Libelle("Véhicules", "/vehicules", VehiculeService.class),
+            new Libelle("Clients", "/clients", ClientService.class),
+            new Libelle("Agences", "/agences", AgenceService.class),
+            new Libelle("Employés", "/employes", EmployeService.class),
+            new Libelle("Réservations", "/reservations", ReservationService.class),
+            new Libelle("Contrats", "/contrats", ContratService.class),
+            new Libelle("Paiements", "/paiements", PaiementService.class),
+            new Libelle("Maintenances", "/maintenances", MaintenanceService.class),
+            new Libelle("Équipements", "/equipements", EquipementService.class));
+
+    /** Every CRUD service is injected as a list, so the constructor does not grow with each entity. */
+    public AccueilController(VehiculeService vehicules, ReservationService reservations, PaiementService paiements,
+                             List<CrudService<?>> services) {
         this.vehicules = vehicules;
         this.reservations = reservations;
         this.paiements = paiements;
-        this.sections = List.of(
-                new Section("Véhicules", "/vehicules", vehicules),
-                new Section("Clients", "/clients", clients),
-                new Section("Agences", "/agences", agences),
-                new Section("Employés", "/employes", employes),
-                new Section("Réservations", "/reservations", reservations),
-                new Section("Contrats", "/contrats", contrats),
-                new Section("Paiements", "/paiements", paiements),
-                new Section("Maintenances", "/maintenances", maintenances),
-                new Section("Équipements", "/equipements", equipements));
+        this.sections = LIBELLES.stream()
+                .map(libelle -> new Section(libelle.titre(), libelle.lien(), services.stream()
+                        .filter(libelle.type()::isInstance)
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("Service absent : " + libelle.type()))))
+                .toList();
     }
 
     @GetMapping("/tableau-de-bord")
@@ -50,6 +57,9 @@ public class AccueilController {
                 .map(section -> new Carte(section.titre(), section.lien(), section.service().compter()))
                 .toList());
         return "accueil";
+    }
+
+    private record Libelle(String titre, String lien, Class<?> type) {
     }
 
     private record Section(String titre, String lien, CrudService<?> service) {

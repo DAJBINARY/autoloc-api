@@ -1,5 +1,6 @@
 package fr.ece.autoloc.service;
 
+import fr.ece.autoloc.config.Horloge;
 import fr.ece.autoloc.domain.ModePaiement;
 import fr.ece.autoloc.domain.Paiement;
 import fr.ece.autoloc.domain.StatutReservation;
@@ -36,7 +37,7 @@ public class StatistiquesService {
     /** Amount received per month, oldest first, months without payment included. */
     @Transactional(readOnly = true)
     public List<Mois> encaisseParMois(int nombre) {
-        YearMonth courant = YearMonth.now();
+        YearMonth courant = YearMonth.now(Horloge.ZONE);
         Map<YearMonth, BigDecimal> totaux = new LinkedHashMap<>();
         for (int i = nombre - 1; i >= 0; i--) {
             totaux.put(courant.minusMonths(i), BigDecimal.ZERO);
