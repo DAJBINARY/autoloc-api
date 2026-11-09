@@ -1,0 +1,3 @@
+# Only the built jar is sent to the Docker daemon
+*
+!target/autoloc-api-*.jar

@@ -1,0 +1,88 @@
+# CI stack of AutoLoc: Jenkins + SonarQube (and its PostgreSQL database).
+# Start:  docker compose -f ci/docker-compose.yml --env-file ci/.env up -d --build
+# Jenkins: http://localhost:8090   SonarQube: http://localhost:9000
+services:
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    # root so that the pipeline can use the host's Docker socket (local CI only)
+    user: root
+    ports:
+      - "127.0.0.1:8090:8080"
+    environment:
+      JENKINS_ADMIN_ID: ${JENKINS_ADMIN_ID}
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
+      SONAR_TOKEN: ${SONAR_TOKEN}
+      DOCKERHUB_USER: ${DOCKERHUB_USER}
+      DOCKERHUB_TOKEN: ${DOCKERHUB_TOKEN}
+      CI_DB_PASSWORD: ${CI_DB_PASSWORD}
+    volumes:
+      - jenkins-home:/var/jenkins_home
+      # Maven dependencies kept between builds
+      - jenkins-m2:/root/.m2
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ci
+    depends_on:
+      sonarqube:
+        condition: service_healthy
+    restart: unless-stopped
+
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    ports:
+      - "127.0.0.1:9000:9000"
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonar-db:5432/sonar
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: ${SONAR_DB_PASSWORD}
+      # Docker Desktop does not let Elasticsearch raise vm.max_map_count
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-extensions:/opt/sonarqube/extensions
+      - sonarqube-logs:/opt/sonarqube/logs
+    networks:
+      - ci
+    depends_on:
+      sonar-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9000/api/system/status | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    restart: unless-stopped
+
+  sonar-db:
+    image: postgres:17-alpine
+    container_name: sonar-db
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: ${SONAR_DB_PASSWORD}
+      POSTGRES_DB: sonar
+    volumes:
+      - sonar-db-data:/var/lib/postgresql/data
+    networks:
+      - ci
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sonar -d sonar"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+networks:
+  ci:
+    # Fixed name: the pipeline attaches its disposable MySQL container to it
+    name: autoloc-ci
+
+volumes:
+  jenkins-home:
+  jenkins-m2:
+  sonarqube-data:
+  sonarqube-extensions:
+  sonarqube-logs:
+  sonar-db-data:

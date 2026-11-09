@@ -1,0 +1,67 @@
+# Jenkins configuration as code. ${...} values come from ci/.env (never committed).
+jenkins:
+  systemMessage: "CI AutoLoc : le job autoloc-api exécute le Jenkinsfile du dépôt."
+  numExecutors: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_ID}"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+  globalNodeProperties:
+    - envVars:
+        env:
+          - key: "DOCKERHUB_USER"
+            value: "${DOCKERHUB_USER}"
+
+unclassified:
+  location:
+    url: "http://localhost:8090/"
+  sonarGlobalConfiguration:
+    buildWrapperEnabled: true
+    installations:
+      - name: "sonarqube"
+        serverUrl: "http://sonarqube:9000"
+        credentialsId: "sonar-token"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              scope: GLOBAL
+              id: "sonar-token"
+              description: "Jeton d'analyse SonarQube"
+              secret: "${SONAR_TOKEN}"
+          - usernamePassword:
+              scope: GLOBAL
+              id: "dockerhub"
+              description: "Docker Hub (jeton d'accès)"
+              username: "${DOCKERHUB_USER}"
+              password: "${DOCKERHUB_TOKEN}"
+          - string:
+              scope: GLOBAL
+              id: "ci-db-password"
+              description: "Mot de passe root de la base MySQL jetable du pipeline"
+              secret: "${CI_DB_PASSWORD}"
+
+jobs:
+  - script: |
+      pipelineJob('autoloc-api') {
+        description('Checkout, base MySQL, tests, SonarQube, image Docker et push Docker Hub.')
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url('https://github.com/DAJBINARY/autoloc-api.git') }
+                branch('*/main')
+              }
+            }
+            scriptPath('Jenkinsfile')
+            lightweight(true)
+          }
+        }
+      }
