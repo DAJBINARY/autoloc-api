@@ -527,7 +527,7 @@ class WorkflowGrafanaTest {
         try {
             reponse = lire(PROMETHEUS + "/api/v1/query?query=" + requete);
         } catch (IOException e) {
-            throw new IllegalStateException("Prometheus est injoignable sur " + PROMETHEUS + " : lancez docker compose up -d", e);
+            throw new IllegalStateException("Prometheus est injoignable sur " + PROMETHEUS + " : lancez docker compose -f docker-compose.cicd.yml --env-file ci/.env up -d", e);
         }
         assertThat(reponse).as("Prometheus doit voir l'application démarrée").contains("\"1\"]");
     }

@@ -1,5 +1,5 @@
 // CI/CD pipeline of AutoLoc API.
-// Runs on the Jenkins of ci/docker-compose.yml: Docker is reached through the host's socket and the
+// Runs on the Jenkins of docker-compose.cicd.yml: Docker is reached through the host's socket and the
 // disposable MySQL container joins the "autoloc-ci" network shared with Jenkins and SonarQube.
 pipeline {
     agent any

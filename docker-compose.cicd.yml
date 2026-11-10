@@ -1,9 +1,16 @@
-# CI stack of AutoLoc: Jenkins + SonarQube (and its PostgreSQL database).
-# Start:  docker compose -f ci/docker-compose.yml --env-file ci/.env up -d --build
+# CI/CD stack of AutoLoc, in a single file:
+#   - CI: Jenkins + SonarQube (and its PostgreSQL database)
+#   - Monitoring: Prometheus collects the application's metrics, Grafana displays them
+#     (the application itself runs on the host, port 8080)
+# Start:  docker compose -f docker-compose.cicd.yml --env-file ci/.env up -d --build
 # Jenkins: http://localhost:8090   SonarQube: http://localhost:9000
+# Prometheus: http://localhost:19090   Grafana: http://localhost:3000
+name: cicd
+
 services:
+  # ---------------------------------------------------------------- CI
   jenkins:
-    build: ./jenkins
+    build: ./ci/jenkins
     container_name: jenkins
     # root so that the pipeline can use the host's Docker socket (local CI only)
     user: root
@@ -82,15 +89,59 @@ services:
       retries: 20
     restart: unless-stopped
 
+  # ---------------------------------------------------------------- Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: autoloc-prometheus
+    ports:
+      # 9090 falls in a port range reserved by Windows on this machine
+      - "127.0.0.1:19090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: autoloc-grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
 networks:
   ci:
     # Fixed name: the pipeline attaches its disposable MySQL container to it
     name: autoloc-ci
+  monitoring:
 
+# Explicit names: they keep the volumes created by the two former compose files
+# (projects "ci" and "autoloc-api"), so no data is lost
 volumes:
   jenkins-home:
+    name: ci_jenkins-home
   jenkins-m2:
+    name: ci_jenkins-m2
   sonarqube-data:
+    name: ci_sonarqube-data
   sonarqube-extensions:
+    name: ci_sonarqube-extensions
   sonarqube-logs:
+    name: ci_sonarqube-logs
   sonar-db-data:
+    name: ci_sonar-db-data
+  prometheus-data:
+    name: autoloc-api_prometheus-data
+  grafana-data:
+    name: autoloc-api_grafana-data
