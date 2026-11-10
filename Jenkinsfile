@@ -5,6 +5,9 @@ pipeline {
     agent any
 
     options {
+        // The "Checkout SCM" stage below checks out the code and computes the image tag:
+        // Jenkins' implicit checkout would add a second, duplicate "Checkout SCM" stage
+        skipDefaultCheckout()
         timestamps()
         disableConcurrentBuilds()
         buildDiscarder(logRotator(numToKeepStr: '10'))
